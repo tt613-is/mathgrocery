@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学杂货店 - Math Grocery</title>
+    <style>
+        /* ==================== 全局样式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ==================== 游戏容器 ==================== */
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        /* ==================== 标题区 ==================== */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* ==================== 订单区域 ==================== */
+        .order-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .order-list {
+            list-style: none;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 16px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-emoji {
+            font-size: 24px;
+        }
+
+        .item-price {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* ==================== 总价和支付区 ==================== */
+        .total-section {
+            background: #fff3cd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-value {
+            color: #d63031;
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        /* ==================== 输入区域 ==================== */
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .change-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .change-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* ==================== 按钮样式 ==================== */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #00b894;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #00a383;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ==================== 反馈区域 ==================== */
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback-correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback-wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .feedback-emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* ==================== 隐藏元素 ==================== */
+        .hidden {
+            display: none;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .change-input {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏标题 -->
+        <h1>🏪 数学杂货店</h1>
+        <p class="subtitle">快速计算找零，当个好老板！</p>
+
+        <!-- 订单区域 -->
+        <div class="order-section">
+            <div class="order-title">
+                📋 顾客购买清单
+            </div>
+            <ul class="order-list" id="orderList">
+                <!-- 动态生成订单项 -->
+            </ul>
+        </div>
+
+        <!-- 总价和支付金额 -->
+        <div class="total-section">
+            <div class="info-row">
+                <span class="info-label">总价：</span>
+                <span class="info-value" id="totalPrice">¥0</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">顾客支付：</span>
+                <span class="info-value" id="customerPaid">¥0</span>
+            </div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="input-section">
+            <label class="input-label" for="changeInput">💰 应找零金额：</label>
+            <input
+                type="number"
+                id="changeInput"
+                class="change-input"
+                placeholder="输入找零金额"
+                min="0"
+            >
+        </div>
+
+        <!-- 提交按钮 -->
+        <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()">
+            ✓ 确认找零
+        </button>
+
+        <!-- 反馈区域 -->
+        <div class="feedback" id="feedback">
+            <div class="feedback-emoji" id="feedbackEmoji"></div>
+            <div id="feedbackText"></div>
+        </div>
+
+        <!-- 下一单按钮 -->
+        <button class="btn btn-secondary hidden" id="nextBtn" onclick="nextRound()">
+            🎯 再来一单
+        </button>
+    </div>
+
+    <script>
+        /**
+         * ==================== 游戏数据 ====================
+         */
+
+        /**
+         * 商品库
+         * @type {Array<{name: string, emoji: string, price: number}>}
+         */
+        const products = [
+            { name: "口香糖", emoji: "🍬", price: 2 },
+            { name: "薯片", emoji: "🍟", price: 5 },
+            { name: "饼干", emoji: "🍪", price: 3 },
+            { name: "巧克力", emoji: "🍫", price: 6 },
+            { name: "饮料", emoji: "🥤", price: 4 },
+            { name: "糖果", emoji: "🍭", price: 2 }
+        ];
+
+        /**
+         * 当前订单状态
+         * @type {{items: Array, total: number, customerPaid: number, correctChange: number}}
+         */
+        let currentOrder = {
+            items: [],          // 购买的商品列表
+            total: 0,           // 总价
+            customerPaid: 0,    // 顾客支付金额
+            correctChange: 0    // 正确的找零金额
+        };
+
+        /**
+         * ==================== 核心函数 ====================
+         */
+
+        /**
+         * 生成随机订单
+         * 随机选择2-3个商品，计算总价，生成顾客支付金额
+         */
+        function generateOrder() {
+            // 重置订单
+            currentOrder.items = [];
+            currentOrder.total = 0;
+
+            // 随机选择2-3个商品
+            const itemCount = Math.floor(Math.random() * 2) + 2; // 2或3
+
+            // 随机选择商品（可能重复购买同一商品）
+            for (let i = 0; i < itemCount; i++) {
+                const randomIndex = Math.floor(Math.random() * products.length);
+                const product = products[randomIndex];
+                currentOrder.items.push(product);
+                currentOrder.total += product.price;
+            }
+
+            // 顾客支付金额 = 总价 + 随机找零(1-5元)
+            const extraMoney = Math.floor(Math.random() * 5) + 1;
+            currentOrder.customerPaid = currentOrder.total + extraMoney;
+
+            // 正确的找零金额
+            currentOrder.correctChange = currentOrder.customerPaid - currentOrder.total;
+
+            // 显示订单
+            displayOrder();
+        }
+
+        /**
+         * 显示订单到页面
+         */
+        function displayOrder() {
+            // 清空之前的订单列表
+            const orderList = document.getElementById('orderList');
+            orderList.innerHTML = '';
+
+            // 渲染每个商品
+            currentOrder.items.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.className = 'order-item';
+                li.innerHTML = `
+                    <span class="item-name">
+                        <span class="item-emoji">${item.emoji}</span>
+                        <span>${item.name}</span>
+                    </span>
+                    <span class="item-price">¥${item.price}</span>
+                `;
+                orderList.appendChild(li);
+            });
+
+            // 显示总价和顾客支付金额
+            document.getElementById('totalPrice').textContent = `¥${currentOrder.total}`;
+            document.getElementById('customerPaid').textContent = `¥${currentOrder.customerPaid}`;
+
+            // 重置输入框和反馈
+            document.getElementById('changeInput').value = '';
+            document.getElementById('changeInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextBtn').classList.add('hidden');
+        }
+
+        /**
+         * 检查玩家输入的找零是否正确
+         */
+        function checkAnswer() {
+            const inputElement = document.getElementById('changeInput');
+            const userAnswer = parseFloat(inputElement.value);
+
+            // 验证输入
+            if (isNaN(userAnswer) || userAnswer < 0) {
+                alert('请输入有效的金额！');
+                return;
+            }
+
+            // 获取反馈元素
+            const feedback = document.getElementById('feedback');
+            const feedbackEmoji = document.getElementById('feedbackEmoji');
+            const feedbackText = document.getElementById('feedbackText');
+
+            // 判断是否正确
+            if (userAnswer === currentOrder.correctChange) {
+                // 正确
+                feedback.className = 'feedback feedback-correct show';
+                feedbackEmoji.textContent = '😊';
+                feedbackText.textContent = '太棒了！顾客很满意！';
+            } else {
+                // 错误
+                feedback.className = 'feedback feedback-wrong show';
+                feedbackEmoji.textContent = '😡';
+                feedbackText.textContent = `顾客生气了！正确答案是 ¥${currentOrder.correctChange}`;
+            }
+
+            // 禁用输入和提交按钮
+            inputElement.disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+
+            // 显示"再来一单"按钮
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        /**
+         * 开始下一轮游戏
+         */
+        function nextRound() {
+            generateOrder();
+        }
+
+        /**
+         * ==================== 游戏初始化 ====================
+         */
+
+        // 页面加载完成后，生成第一个订单
+        window.addEventListener('DOMContentLoaded', function() {
+            generateOrder();
+
+            // 支持回车键提交
+            document.getElementById('changeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !this.disabled) {
+                    checkAnswer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

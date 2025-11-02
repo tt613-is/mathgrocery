@@ -103,7 +103,7 @@
 ```javascript
 // 商品库（带ID标识）
 products = [
-  { id: 'apple', name: "苹果", emoji: "🍎", price: 3 },
+  { id: 'apple', name: "苹果", emoji: "🍎", price: 1 },
   { id: 'donut_a', name: "甜甜圈A", emoji: "🍩", price: 2 },
   // ...
 ]

@@ -16,7 +16,7 @@
 
 ## ✨ 当前功能（v0.1.0 MVP）
 
-- [x] 固定商品库（6种商品，整数价格）
+- [x] 固定商品库（8种商品，整数价格）
 - [x] 随机生成订单（2-3个商品）
 - [x] 自动计算总价
 - [x] 顾客随机支付金额（总价+1~5元）
@@ -54,9 +54,14 @@
 ### 核心数据
 ```javascript
 products = [
-  { name: "口香糖", emoji: "🍬", price: 2 },
+  { name: "苹果", emoji: "🍎", price: 3 },
+  { name: "甜甜圈", emoji: "🍩", price: 4 },
+  { name: "肉", emoji: "🥩", price: 8 },
+  { name: "鱼", emoji: "🐟", price: 7 },
+  { name: "Milk", emoji: "🥛", price: 5 },
   { name: "薯片", emoji: "🍟", price: 5 },
-  // ...
+  { name: "橡皮", emoji: "🧽", price: 2 },
+  { name: "棒棒糖", emoji: "🍭", price: 2 }
 ]
 ```
 

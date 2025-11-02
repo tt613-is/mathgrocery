@@ -318,14 +318,17 @@
          * @type {Array<{name: string, emoji: string, price: number}>}
          */
         const products = [
-            { name: "苹果", emoji: "🍎", price: 3 },
-            { name: "甜甜圈", emoji: "🍩", price: 4 },
-            { name: "肉", emoji: "🥩", price: 8 },
-            { name: "鱼", emoji: "🐟", price: 7 },
+            { name: "苹果", emoji: "🍎", price: 1 },
+            { name: "甜甜圈A", emoji: "🍩", price: 2 },
+            { name: "甜甜圈B", emoji: "🍩", price: 2.5 },
+            { name: "甜甜圈C", emoji: "🍩", price: 2.7 },
+            { name: "肉", emoji: "🥩", price: 56.3 },
+            { name: "鱼", emoji: "🐟", price: 56.3 },
+            { name: "鸡腿", emoji: "🍗", price: 56.3 },
             { name: "Milk", emoji: "🥛", price: 5 },
-            { name: "薯片", emoji: "🍟", price: 5 },
-            { name: "橡皮", emoji: "🧽", price: 2 },
-            { name: "棒棒糖", emoji: "🍭", price: 2 }
+            { name: "薯片", emoji: "🍟", price: 1.2 },
+            { name: "橡皮", emoji: "🧽", price: 3 },
+            { name: "棒棒糖", emoji: "🍭", price: 0.5 }
         ];
 
         /**
@@ -363,12 +366,15 @@
                 currentOrder.total += product.price;
             }
 
+            // 修复浮点数精度问题
+            currentOrder.total = parseFloat(currentOrder.total.toFixed(2));
+
             // 顾客支付金额 = 总价 + 随机找零(1-5元)
             const extraMoney = Math.floor(Math.random() * 5) + 1;
-            currentOrder.customerPaid = currentOrder.total + extraMoney;
+            currentOrder.customerPaid = parseFloat((currentOrder.total + extraMoney).toFixed(2));
 
             // 正确的找零金额
-            currentOrder.correctChange = currentOrder.customerPaid - currentOrder.total;
+            currentOrder.correctChange = parseFloat((currentOrder.customerPaid - currentOrder.total).toFixed(2));
 
             // 显示订单
             displayOrder();
@@ -391,14 +397,14 @@
                         <span class="item-emoji">${item.emoji}</span>
                         <span>${item.name}</span>
                     </span>
-                    <span class="item-price">¥${item.price}</span>
+                    <span class="item-price">$${item.price.toFixed(2)}</span>
                 `;
                 orderList.appendChild(li);
             });
 
             // 显示总价和顾客支付金额
-            document.getElementById('totalPrice').textContent = `¥${currentOrder.total}`;
-            document.getElementById('customerPaid').textContent = `¥${currentOrder.customerPaid}`;
+            document.getElementById('totalPrice').textContent = `$${currentOrder.total.toFixed(2)}`;
+            document.getElementById('customerPaid').textContent = `$${currentOrder.customerPaid.toFixed(2)}`;
 
             // 重置输入框和反馈
             document.getElementById('changeInput').value = '';
@@ -426,8 +432,8 @@
             const feedbackEmoji = document.getElementById('feedbackEmoji');
             const feedbackText = document.getElementById('feedbackText');
 
-            // 判断是否正确
-            if (userAnswer === currentOrder.correctChange) {
+            // 判断是否正确（使用toFixed处理浮点数精度）
+            if (userAnswer.toFixed(2) === currentOrder.correctChange.toFixed(2)) {
                 // 正确
                 feedback.className = 'feedback feedback-correct show';
                 feedbackEmoji.textContent = '😊';
@@ -436,7 +442,7 @@
                 // 错误
                 feedback.className = 'feedback feedback-wrong show';
                 feedbackEmoji.textContent = '😡';
-                feedbackText.textContent = `顾客生气了！正确答案是 ¥${currentOrder.correctChange}`;
+                feedbackText.textContent = `顾客生气了！正确答案是 $${currentOrder.correctChange.toFixed(2)}`;
             }
 
             // 禁用输入和提交按钮

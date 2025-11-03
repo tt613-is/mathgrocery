@@ -37,17 +37,31 @@
             position: relative;
             display: flex;
             align-items: flex-end;
-            justify-content: center;
+            justify-content: flex-start;
             padding-bottom: 10px;
+            padding-left: 50px;
         }
 
         .customer-avatar {
-            font-size: 80px;
+            width: 140px;
+            height: 140px;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
             margin-bottom: 0;
             animation: customerEnter 0.5s ease-out;
             position: relative;
             display: inline-block;
+            border-radius: 50%;
+            object-fit: cover;
+            font-size: 120px;
+            text-align: center;
+            line-height: 140px;
+        }
+
+        .customer-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         @keyframes customerEnter {
@@ -65,9 +79,9 @@
             position: absolute;
             left: 100%;
             top: -20px;
-            margin-left: 20px;
-            min-width: 250px;
-            max-width: 400px;
+            margin-left: 30px;
+            min-width: 350px;
+            max-width: 550px;
             background: white;
             border-radius: 15px;
             padding: 15px 20px;
@@ -727,7 +741,7 @@
         <!-- ==================== 顾客区域 ==================== -->
         <div class="customer-area">
             <div class="customer-avatar" id="customerAvatar">
-                👤
+                <img id="customerImage" src="" alt="Customer">
                 <div class="customer-dialog">
                     <div class="dialog-text" id="dialogText">Welcome to Math Grocery!</div>
                     <div class="customer-order" id="customerOrder"></div>
@@ -1341,12 +1355,17 @@
             const paid = parseFloat((totalPrice + extra).toFixed(2));
             const correctChange = parseFloat((paid - totalPrice).toFixed(2));
 
+            // 随机选择顾客头像（1-4）
+            const avatarIndex = 1 + Math.floor(Math.random() * 4);
+            const avatarImage = `chars/char${avatarIndex}.jpg`;
+
             return {
                 order,
                 bag: [],
                 totalPrice,
                 paid,
-                correctChange
+                correctChange,
+                avatar: avatarImage
             };
         }
 
@@ -1361,6 +1380,10 @@
 
             // 重新渲染货架（重置所有商品状态）
             initShelfAreas();
+
+            // 设置顾客头像
+            const customerImage = document.getElementById('customerImage');
+            customerImage.src = gameState.currentCustomer.avatar;
 
             // 更新顾客区域UI
             const order = gameState.currentCustomer.order;

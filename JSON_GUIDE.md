@@ -81,7 +81,18 @@ python3 -m http.server 8080
 {
   "customerArea": {
     "height": "25vh",
-    "background": "linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%)"
+    "background": "linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%)",
+    "avatar": {
+      "width": "120px",
+      "height": "160px",
+      "borderRadius": "10px",
+      "marginRight": "30vw"
+    },
+    "dialog": {
+      "minWidth": "350px",
+      "maxWidth": "550px",
+      "marginLeft": "30px"
+    }
   }
 }
 ```
@@ -90,6 +101,23 @@ python3 -m http.server 8080
 |------|------|------|------|
 | `height` | string | 顾客区域高度 | `"25vh"`, `"200px"` |
 | `background` | string | 背景样式 | CSS渐变或颜色 |
+| `avatar` | object | 头像配置 | 见下表 |
+| `dialog` | object | 对话框配置 | 见下表 |
+
+#### 头像配置 (avatar)
+| 字段 | 类型 | 说明 | 示例 |
+|------|------|------|------|
+| `width` | string | 头像宽度 | `"120px"`, `"10vw"` |
+| `height` | string | 头像高度 | `"160px"`, `"15vh"` |
+| `borderRadius` | string | 圆角半径 | `"10px"` (轻微圆角), `"50%"` (圆形) |
+| `marginRight` | string | 右边距（控制偏左程度） | `"30vw"` (居中偏左), `"0"` (完全居左) |
+
+#### 对话框配置 (dialog)
+| 字段 | 类型 | 说明 | 示例 |
+|------|------|------|------|
+| `minWidth` | string | 对话框最小宽度 | `"350px"` |
+| `maxWidth` | string | 对话框最大宽度 | `"550px"` |
+| `marginLeft` | string | 对话框左边距 | `"30px"` |
 
 ---
 

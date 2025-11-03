@@ -46,6 +46,7 @@
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
             margin-bottom: 0;
             animation: customerEnter 0.5s ease-out;
+            position: relative;
         }
 
         @keyframes customerEnter {
@@ -61,14 +62,14 @@
 
         .customer-dialog {
             position: absolute;
-            right: 80px;
-            top: 20px;
-            max-width: 400px;
+            left: calc(100% + 15px);
+            bottom: 0;
+            max-width: 300px;
             background: white;
             border-radius: 12px;
             padding: 12px 18px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            text-align: center;
+            text-align: left;
             animation: dialogBounce 0.5s ease-out 0.2s both;
         }
 
@@ -89,13 +90,13 @@
         .customer-dialog::before {
             content: '';
             position: absolute;
-            bottom: -15px;
-            left: 30px;
+            left: -15px;
+            bottom: 10px;
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 15px solid white;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 15px solid white;
         }
 
         .dialog-text {
@@ -250,6 +251,45 @@
             font-weight: bold;
         }
 
+        /* 价格标签 */
+        .price-label {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #fff;
+            border: 2px solid #ffa726;
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            font-size: 11px;
+            line-height: 1.3;
+            z-index: 1;
+            max-width: calc(100% - 20px);
+        }
+
+        .price-label-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .price-label-items {
+            color: #666;
+        }
+
+        .price-label-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .price-label-discount {
+            color: #d32f2f;
+            font-weight: bold;
+            margin-top: 2px;
+            font-size: 10px;
+        }
+
         /* 商品卡片 */
         .product-item {
             cursor: pointer;
@@ -302,13 +342,6 @@
         .product-name {
             font-size: 12px;
             color: #666;
-        }
-
-        .product-price {
-            font-size: 14px;
-            font-weight: bold;
-            color: #d32f2f;
-            margin-top: 2px;
         }
 
         /* ==================== 钱箱+操作区域 ==================== */
@@ -796,7 +829,13 @@
                 size: { width: '120px', height: '62vh' },
                 layout: 'vertical',
                 products: ['donut_c', 'donut_b', 'donut_a'],
-                style: 'shelf-area-tower'
+                style: 'shelf-area-tower',
+                priceLabel: {
+                    productName: 'Donuts',
+                    prices: ['$2.00', '$2.50', '$3.00'],
+                    unit: 'each',
+                    discount: null
+                }
             },
             {
                 id: 'snack-corner',
@@ -807,7 +846,16 @@
                 layout: 'grid',
                 gridConfig: { rows: 2, cols: 3 },
                 products: ['lollipop', 'lollipop', 'lollipop', 'chips', 'chips', 'chips'],
-                style: 'shelf-area-grid'
+                style: 'shelf-area-grid',
+                priceLabel: {
+                    productName: 'Snacks',
+                    items: [
+                        { name: 'Lollipop', price: '$0.50' },
+                        { name: 'Chips', price: '$1.20' }
+                    ],
+                    unit: 'each',
+                    discount: '2 Lollipops for $0.90'
+                }
             },
             {
                 id: 'fruit-stand',
@@ -817,11 +865,19 @@
                 size: { width: '180px', height: '35vh' },
                 layout: 'rows',
                 products: [
-                    { row: 'top', items: ['orange', 'orange'] },
+                    { row: 'top', items: ['apple', 'apple'] },
                     { row: 'middle', items: ['apple', 'apple', 'apple'] },
-                    { row: 'bottom', items: ['milk'] }
+                    { row: 'bottom', items: [] }
                 ],
-                style: 'shelf-area-shelves'
+                style: 'shelf-area-shelves',
+                priceLabel: {
+                    productName: 'Fresh Produce',
+                    items: [
+                        { name: 'Apple', price: '$1.00' }
+                    ],
+                    unit: 'each',
+                    discount: null
+                }
             },
             {
                 id: 'seafood-freezer',
@@ -831,8 +887,13 @@
                 size: { width: '220px', height: '22vh' },
                 layout: 'scattered',
                 products: ['fish', 'fish', 'fish'],
-                label: '$50 each',
-                style: 'shelf-area-freezer'
+                style: 'shelf-area-freezer',
+                priceLabel: {
+                    productName: 'Fish',
+                    price: '$15.00',
+                    unit: 'each',
+                    discount: null
+                }
             },
             {
                 id: 'meat-freezer',
@@ -842,7 +903,16 @@
                 size: { width: '220px', height: '30vh' },
                 layout: 'mixed',
                 products: ['meat', 'chicken', 'chicken', 'chicken', 'chicken'],
-                style: 'shelf-area-freezer'
+                style: 'shelf-area-freezer',
+                priceLabel: {
+                    productName: 'Meat',
+                    items: [
+                        { name: 'Beef', price: '$15.00' },
+                        { name: 'Chicken', price: '$15.00' }
+                    ],
+                    unit: 'each',
+                    discount: null
+                }
             }
         ];
 
@@ -908,12 +978,37 @@
                 height: ${config.size.height};
             `;
 
-            // 添加标签（如果有）
-            if (config.label) {
-                const label = document.createElement('div');
-                label.className = 'freezer-label';
-                label.textContent = config.label;
-                div.appendChild(label);
+            // 添加价格标签（如果有）
+            if (config.priceLabel) {
+                const priceLabel = document.createElement('div');
+                priceLabel.className = 'price-label';
+
+                let labelHTML = `<div class="price-label-header">${config.priceLabel.productName}</div>`;
+                labelHTML += `<div class="price-label-items">`;
+
+                // 处理多种价格显示格式
+                if (config.priceLabel.items) {
+                    // 多商品列表格式
+                    config.priceLabel.items.forEach(item => {
+                        labelHTML += `<div class="price-label-item"><span>${item.name}</span><span>${item.price}</span></div>`;
+                    });
+                } else if (config.priceLabel.prices) {
+                    // 多价格数组格式（如甜甜圈）
+                    labelHTML += config.priceLabel.prices.join(', ') + ' ' + config.priceLabel.unit;
+                } else if (config.priceLabel.price) {
+                    // 单一价格格式
+                    labelHTML += config.priceLabel.price + ' ' + config.priceLabel.unit;
+                }
+
+                labelHTML += `</div>`;
+
+                // 添加折扣信息
+                if (config.priceLabel.discount) {
+                    labelHTML += `<div class="price-label-discount">🏷️ ${config.priceLabel.discount}</div>`;
+                }
+
+                priceLabel.innerHTML = labelHTML;
+                div.appendChild(priceLabel);
             }
 
             // 根据布局类型渲染商品
@@ -963,7 +1058,6 @@
             div.innerHTML = `
                 <div class="product-emoji">${product.emoji}</div>
                 <div class="product-name">${product.name}</div>
-                <div class="product-price">$${product.price.toFixed(2)}</div>
             `;
             return div;
         }

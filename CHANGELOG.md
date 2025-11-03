@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### 🏷️ Price Label System
+
+**UI Improvements:**
+- 📋 **Unified Price Labels**: Each shelf area now has a single price label instead of individual item prices
+- 🏪 **Supermarket-Style Display**: Labels show product names, prices, and currency units
+- 💰 **Flexible Pricing**: Supports single prices, multiple prices, and item lists
+- 🎁 **Discount Tags**: Special discount information (e.g., "2 Lollipops for $0.90") with 🏷️ icon
+- 🎨 **Clean Design**: Orange-bordered white labels with shadow effects
+- 💬 **Dialog Bubble Fix**: Customer dialog now properly positioned next to avatar (speech bubble style)
+
+**Implementation:**
+- `priceLabel` configuration in `SHELF_CONFIG`
+- Multiple display formats:
+  - Single price: `{ productName, price, unit, discount }`
+  - Multiple prices: `{ productName, prices[], unit, discount }`
+  - Item list: `{ productName, items[{name, price}], unit, discount }`
+- Removed individual price display from product cards
+- Dynamic label rendering in `renderShelfArea()`
+
+**Product Changes:**
+- Fruit Stand: Now displays 5 apples (removed oranges and milk)
+- Updated price labels accordingly
+
+**Examples:**
+- Donuts: "$2.00, $2.50, $3.00 each"
+- Snacks: "Lollipop $0.50, Chips $1.20 each" + discount "2 Lollipops for $0.90"
+- Fish: "$15.00 each"
+- Apples: "$1.00 each"
+
 ### ✨ Animation & Polish Enhancements
 
 **Visual Improvements:**

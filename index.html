@@ -375,13 +375,21 @@
             letter-spacing: 1px;
         }
 
-        /* 计算器显示屏 */
+        /* 显示屏和送出按钮容器 */
+        .display-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* 计算器显示屏（缩短） */
         .calculator-display {
+            flex: 1;
             background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
             border-radius: 15px;
-            padding: 25px 20px;  /* 增加padding让显示屏更宽 */
-            margin-bottom: 30px;
-            min-height: 90px;  /* 增加最小高度 */
+            padding: 25px 20px;
+            min-height: 90px;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
         }
 
@@ -391,6 +399,30 @@
             color: #1a1a1a;
             text-align: center;
             letter-spacing: 3px;
+        }
+
+        /* 送出按钮（在显示屏右侧） */
+        .btn-submit-top {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: none;
+            font-size: 48px;
+            color: white;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+            flex-shrink: 0;
+        }
+
+        .btn-submit-top:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .btn-submit-top:active {
+            transform: scale(0.95);
         }
 
         .calculator-buttons {
@@ -426,24 +458,18 @@
         .btn-6 { left: 240px; top: 130px; }
         .btn-7 { left: 340px; top: 130px; }
 
-        /* 第3排：Backspace 8 9 */
+        /* 第3排：8 9 */
+        .btn-8 { left: 190px; top: 230px; }
+        .btn-9 { left: 290px; top: 230px; }
+
+        /* 第4排：0 Backspace */
+        .btn-0 { left: 240px; top: 330px; }
         .btn-backspace {
-            left: 140px;
-            top: 230px;
+            left: 340px;
+            top: 330px;
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
             font-size: 36px;
         }
-        .btn-8 { left: 240px; top: 230px; }
-        .btn-9 { left: 340px; top: 230px; }
-
-        /* 第4排：Submit(⬆️) 0 */
-        .btn-submit {
-            left: 190px;
-            top: 330px;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            font-size: 40px;
-        }
-        .btn-0 { left: 290px; top: 330px; }
 
         .calc-button:hover {
             transform: scale(1.1);
@@ -726,11 +752,17 @@
             <!-- 计算器区域 -->
             <div class="cashier-area" id="cashierArea">
                 <!-- 提示文字 -->
-                <div class="calculator-hint">Please enter the change amount</div>
+                <div class="calculator-hint">Enter equation or result (e.g., 10-7.5=2.5 or 2.5)</div>
 
-                <!-- 显示屏 -->
-                <div class="calculator-display">
-                    <div class="calculator-question" id="calculatorQuestion">0</div>
+                <!-- 显示屏和送出按钮 -->
+                <div class="display-container">
+                    <!-- 显示屏 -->
+                    <div class="calculator-display">
+                        <div class="calculator-question" id="calculatorQuestion">0</div>
+                    </div>
+
+                    <!-- 送出按钮 -->
+                    <button class="btn-submit-top" onclick="submitChange()">⬆️</button>
                 </div>
 
                 <!-- 数字按钮（等式记录器布局） -->
@@ -746,14 +778,13 @@
                     <button class="calc-button btn-6" onclick="inputDigit('6')">6</button>
                     <button class="calc-button btn-7" onclick="inputDigit('7')">7</button>
 
-                    <!-- 第3排：🔙 8 9 -->
-                    <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
+                    <!-- 第3排：8 9 -->
                     <button class="calc-button btn-8" onclick="inputDigit('8')">8</button>
                     <button class="calc-button btn-9" onclick="inputDigit('9')">9</button>
 
-                    <!-- 第4排：⬆️ 0 -->
-                    <button class="calc-button btn-submit" onclick="submitChange()">⬆️</button>
+                    <!-- 第4排：0 🔙 -->
                     <button class="calc-button btn-0" onclick="inputDigit('0')">0</button>
+                    <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
                 </div>
 
                 <!-- 操作按钮 -->
@@ -1028,23 +1059,31 @@
         }
 
         /**
-         * 提取等式右边的值
+         * 提取找零金额（支持等式或直接数字）
          */
         function extractChangeAmount() {
-            // 查找等号位置
-            const equalIndex = equationDisplay.lastIndexOf('=');
+            const input = equationDisplay.trim();
 
-            if (equalIndex === -1 || equalIndex === equationDisplay.length - 1) {
-                return null; // 没有等号或等号后面没有内容
+            if (!input) {
+                return null;
             }
 
-            // 提取等号右边的部分
-            const rightSide = equationDisplay.substring(equalIndex + 1).trim();
+            // 查找等号位置
+            const equalIndex = input.lastIndexOf('=');
 
-            // 尝试转换为数字
-            const amount = parseFloat(rightSide);
-
-            return isNaN(amount) ? null : amount;
+            if (equalIndex !== -1) {
+                // 有等号，提取等号右边的部分
+                if (equalIndex === input.length - 1) {
+                    return null; // 等号后面没有内容
+                }
+                const rightSide = input.substring(equalIndex + 1).trim();
+                const amount = parseFloat(rightSide);
+                return isNaN(amount) ? null : amount;
+            } else {
+                // 没有等号，直接尝试将整个输入转换为数字
+                const amount = parseFloat(input);
+                return isNaN(amount) ? null : amount;
+            }
         }
 
         /**
@@ -1054,7 +1093,7 @@
             const changeAmount = extractChangeAmount();
 
             if (changeAmount === null) {
-                showTempMessage('Please complete the equation first! (e.g., 10-5=5)', 'warning');
+                showTempMessage('Please enter a valid number or equation! (e.g., 2.5 or 10-7.5=2.5)', 'warning');
                 return;
             }
 

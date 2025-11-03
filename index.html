@@ -113,9 +113,8 @@
 
         .customer-bag {
             position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 15px;
+            bottom: 15px;
             min-width: 150px;
             background: #fff3cd;
             border-radius: 10px;
@@ -129,9 +128,9 @@
         }
 
         @keyframes bagShake {
-            0%, 100% { transform: translateY(-50%) rotate(0deg); }
-            25% { transform: translateY(-50%) rotate(-5deg) scale(1.05); }
-            75% { transform: translateY(-50%) rotate(5deg) scale(1.05); }
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg) scale(1.05); }
+            75% { transform: rotate(5deg) scale(1.05); }
         }
 
         .bag-title {

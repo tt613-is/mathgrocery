@@ -414,30 +414,36 @@
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
 
-        /* 倒三角形按钮布局 */
+        /* 等式记录器按钮布局 */
         /* 第1排：1 2 3 4 */
         .btn-1 { left: 90px; top: 30px; }
         .btn-2 { left: 190px; top: 30px; }
         .btn-3 { left: 290px; top: 30px; }
         .btn-4 { left: 390px; top: 30px; }
 
-        /* 第2排：5 6 7 和 Backspace */
+        /* 第2排：5 6 7 */
         .btn-5 { left: 140px; top: 130px; }
         .btn-6 { left: 240px; top: 130px; }
         .btn-7 { left: 340px; top: 130px; }
+
+        /* 第3排：Backspace 8 9 */
         .btn-backspace {
-            left: 440px;
-            top: 130px;
+            left: 140px;
+            top: 230px;
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
             font-size: 36px;
         }
+        .btn-8 { left: 240px; top: 230px; }
+        .btn-9 { left: 340px; top: 230px; }
 
-        /* 第3排：8 9 */
-        .btn-8 { left: 190px; top: 230px; }
-        .btn-9 { left: 290px; top: 230px; }
-
-        /* 第4排：0 (在8和9的中间位置) */
-        .btn-0 { left: 240px; top: 330px; }
+        /* 第4排：Submit(⬆️) 0 */
+        .btn-submit {
+            left: 190px;
+            top: 330px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            font-size: 40px;
+        }
+        .btn-0 { left: 290px; top: 330px; }
 
         .calc-button:hover {
             transform: scale(1.1);
@@ -727,35 +733,37 @@
                     <div class="calculator-question" id="calculatorQuestion">0</div>
                 </div>
 
-                <!-- 数字按钮（倒三角形布局） -->
+                <!-- 数字按钮（等式记录器布局） -->
                 <div class="calculator-buttons">
                     <!-- 第1排：1 2 3 4 -->
-                    <button class="calc-button btn-1" onclick="inputNumber(1)">1</button>
-                    <button class="calc-button btn-2" onclick="inputNumber(2)">2</button>
-                    <button class="calc-button btn-3" onclick="inputNumber(3)">3</button>
-                    <button class="calc-button btn-4" onclick="inputNumber(4)">4</button>
+                    <button class="calc-button btn-1" onclick="inputDigit('1')">1</button>
+                    <button class="calc-button btn-2" onclick="inputDigit('2')">2</button>
+                    <button class="calc-button btn-3" onclick="inputDigit('3')">3</button>
+                    <button class="calc-button btn-4" onclick="inputDigit('4')">4</button>
 
-                    <!-- 第2排：5 6 7 和 Backspace -->
-                    <button class="calc-button btn-5" onclick="inputNumber(5)">5</button>
-                    <button class="calc-button btn-6" onclick="inputNumber(6)">6</button>
-                    <button class="calc-button btn-7" onclick="inputNumber(7)">7</button>
+                    <!-- 第2排：5 6 7 -->
+                    <button class="calc-button btn-5" onclick="inputDigit('5')">5</button>
+                    <button class="calc-button btn-6" onclick="inputDigit('6')">6</button>
+                    <button class="calc-button btn-7" onclick="inputDigit('7')">7</button>
+
+                    <!-- 第3排：🔙 8 9 -->
                     <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
+                    <button class="calc-button btn-8" onclick="inputDigit('8')">8</button>
+                    <button class="calc-button btn-9" onclick="inputDigit('9')">9</button>
 
-                    <!-- 第3排：8 9 -->
-                    <button class="calc-button btn-8" onclick="inputNumber(8)">8</button>
-                    <button class="calc-button btn-9" onclick="inputNumber(9)">9</button>
-
-                    <!-- 第4排：0 -->
-                    <button class="calc-button btn-0" onclick="inputNumber(0)">0</button>
+                    <!-- 第4排：⬆️ 0 -->
+                    <button class="calc-button btn-submit" onclick="submitChange()">⬆️</button>
+                    <button class="calc-button btn-0" onclick="inputDigit('0')">0</button>
                 </div>
 
                 <!-- 操作按钮 -->
                 <div class="calculator-operators">
-                    <button class="calc-op-button" onclick="inputOperator('+')">+</button>
-                    <button class="calc-op-button" onclick="inputOperator('-')">-</button>
-                    <button class="calc-op-button" onclick="inputOperator('×')">×</button>
-                    <button class="calc-op-button" onclick="inputOperator('÷')">÷</button>
-                    <button class="calc-op-button" onclick="calculate()">=</button>
+                    <button class="calc-op-button" onclick="inputSymbol('+')">+</button>
+                    <button class="calc-op-button" onclick="inputSymbol('-')">-</button>
+                    <button class="calc-op-button" onclick="inputSymbol('×')">×</button>
+                    <button class="calc-op-button" onclick="inputSymbol('÷')">÷</button>
+                    <button class="calc-op-button" onclick="inputSymbol('=')">=</button>
+                    <button class="calc-op-button" onclick="inputSymbol('.')">.</button>
                 </div>
             </div>
         </div>
@@ -981,99 +989,132 @@
         };
 
         /**
-         * ==================== 计算器逻辑 ====================
+         * ==================== 等式记录器逻辑 ====================
          */
-        let calculatorState = {
-            display: '',
-            currentNumber: '',
-            operator: null,
-            firstNumber: null,
-            waitingForOperand: false
-        };
+        let equationDisplay = '';
 
-        function updateDisplay() {
+        /**
+         * 更新显示屏
+         */
+        function updateEquationDisplay() {
             const display = document.getElementById('calculatorQuestion');
-            if (calculatorState.display === '') {
-                display.textContent = '0';
-            } else {
-                display.textContent = calculatorState.display;
-            }
-        }
-
-        function inputNumber(num) {
-            if (calculatorState.waitingForOperand) {
-                calculatorState.display = String(num);
-                calculatorState.waitingForOperand = false;
-            } else {
-                calculatorState.display = calculatorState.display === '0' || calculatorState.display === '' ? String(num) : calculatorState.display + String(num);
-            }
-            updateDisplay();
-        }
-
-        function inputOperator(op) {
-            const inputValue = parseFloat(calculatorState.display);
-
-            if (calculatorState.firstNumber === null) {
-                calculatorState.firstNumber = inputValue;
-            } else if (calculatorState.operator) {
-                const result = performCalculation();
-                calculatorState.display = String(result);
-                calculatorState.firstNumber = result;
-            }
-
-            calculatorState.waitingForOperand = true;
-            calculatorState.operator = op;
-            calculatorState.display += ' ' + op + ' ';
-            updateDisplay();
-        }
-
-        function performCalculation() {
-            const first = calculatorState.firstNumber;
-            const second = parseFloat(calculatorState.display.split(' ').pop());
-
-            switch (calculatorState.operator) {
-                case '+':
-                    return first + second;
-                case '-':
-                    return first - second;
-                case '×':
-                    return first * second;
-                case '÷':
-                    return first / second;
-                default:
-                    return second;
-            }
-        }
-
-        function calculate() {
-            if (calculatorState.operator && !calculatorState.waitingForOperand) {
-                const result = performCalculation();
-                calculatorState.display = calculatorState.display + ' = ' + result;
-                calculatorState.firstNumber = null;
-                calculatorState.operator = null;
-                calculatorState.waitingForOperand = true;
-                updateDisplay();
-            }
-        }
-
-        function clearCalculator() {
-            calculatorState = {
-                display: '',
-                currentNumber: '',
-                operator: null,
-                firstNumber: null,
-                waitingForOperand: false
-            };
-            updateDisplay();
+            display.textContent = equationDisplay || '0';
         }
 
         /**
-         * 退格删除最后一个字符
+         * 输入数字
+         */
+        function inputDigit(digit) {
+            equationDisplay += digit;
+            updateEquationDisplay();
+        }
+
+        /**
+         * 输入符号
+         */
+        function inputSymbol(symbol) {
+            equationDisplay += symbol;
+            updateEquationDisplay();
+        }
+
+        /**
+         * 退格删除
          */
         function backspace() {
-            if (calculatorState.display.length > 0) {
-                calculatorState.display = calculatorState.display.slice(0, -1);
-                updateDisplay();
+            if (equationDisplay.length > 0) {
+                equationDisplay = equationDisplay.slice(0, -1);
+                updateEquationDisplay();
+            }
+        }
+
+        /**
+         * 提取等式右边的值
+         */
+        function extractChangeAmount() {
+            // 查找等号位置
+            const equalIndex = equationDisplay.lastIndexOf('=');
+
+            if (equalIndex === -1 || equalIndex === equationDisplay.length - 1) {
+                return null; // 没有等号或等号后面没有内容
+            }
+
+            // 提取等号右边的部分
+            const rightSide = equationDisplay.substring(equalIndex + 1).trim();
+
+            // 尝试转换为数字
+            const amount = parseFloat(rightSide);
+
+            return isNaN(amount) ? null : amount;
+        }
+
+        /**
+         * 提交找零（红色⬆️按钮）
+         */
+        function submitChange() {
+            const changeAmount = extractChangeAmount();
+
+            if (changeAmount === null) {
+                showTempMessage('Please complete the equation first! (e.g., 10-5=5)', 'warning');
+                return;
+            }
+
+            // 验证找零是否正确
+            const correctChange = gameState.currentCustomer.correctChange;
+            const isCorrect = Math.abs(changeAmount - correctChange) < 0.01;
+
+            if (isCorrect) {
+                // 找零正确
+                showResultFeedback(true, changeAmount);
+                gameState.score++;
+            } else {
+                // 找零错误
+                showResultFeedback(false, changeAmount);
+            }
+
+            // 清空等式
+            equationDisplay = '';
+            updateEquationDisplay();
+
+            // 延迟进入下一个顾客
+            setTimeout(() => {
+                hideResultFeedback();
+                nextCustomer();
+            }, 2500);
+        }
+
+        /**
+         * 显示结果反馈
+         */
+        function showResultFeedback(isCorrect, playerChange) {
+            const overlay = document.getElementById('feedbackOverlay');
+            const correctChange = gameState.currentCustomer.correctChange;
+
+            overlay.innerHTML = `
+                <div class="feedback-box" style="animation: feedbackBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;">
+                    <div class="feedback-emoji" style="animation: emojiPop 0.6s ease 0.3s both;">
+                        ${isCorrect ? '😊' : '😢'}
+                    </div>
+                    <div class="feedback-title" style="font-size: 28px; font-weight: bold; margin: 20px 0; color: #333;">
+                        ${isCorrect ? 'Correct!' : 'Incorrect!'}
+                    </div>
+                    <div class="feedback-details" style="font-size: 18px; color: #666; line-height: 1.6;">
+                        <div>Your change: <strong>$${playerChange.toFixed(2)}</strong></div>
+                        <div>Correct change: <strong>$${correctChange.toFixed(2)}</strong></div>
+                        <div style="margin-top: 15px;">Score: <strong>${gameState.score}</strong></div>
+                    </div>
+                </div>
+            `;
+
+            overlay.style.display = 'flex';
+        }
+
+        /**
+         * 隐藏结果反馈
+         */
+        function hideResultFeedback() {
+            const overlay = document.getElementById('feedbackOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
             }
         }
 
@@ -1396,168 +1437,10 @@
             document.getElementById('dialogText').textContent = 'Great! Here\'s the money:';
             document.getElementById('customerOrder').textContent = '';
             document.getElementById('paymentInfo').classList.remove('hidden');
-            document.getElementById('paymentAmount').textContent = `Customer gave $${customer.paid.toFixed(2)}`;
+            document.getElementById('paymentAmount').textContent = `Customer gave $${customer.paid.toFixed(2)} | Total: $${customer.totalPrice.toFixed(2)}`;
 
             // 显示收银台
             document.getElementById('cashierArea').classList.remove('hidden');
-
-            // 更新订单信息
-            const orderSummary = customer.order.map(item =>
-                `${PRODUCTS[item.productId].emoji}×${item.quantity}`
-            ).join(' ');
-            document.getElementById('orderSummary').textContent = orderSummary;
-            document.getElementById('totalPrice').textContent = `$${customer.totalPrice.toFixed(2)}`;
-            document.getElementById('customerPaid').textContent = `$${customer.paid.toFixed(2)}`;
-            document.getElementById('correctChange').textContent = `$${customer.correctChange.toFixed(2)}`;
-
-            // 初始化钱箱
-            renderCashRegister();
-            updateSelectedAmount();
-            updateCoinButtons();
-        }
-
-        /**
-         * 渲染钱箱
-         */
-        function renderCashRegister() {
-            const grid = document.getElementById('cashGrid');
-            grid.innerHTML = '';
-
-            const denominations = ['0.05', '0.10', '0.20', '0.50', '1', '2', '5', '10', '50'];
-            denominations.forEach(denom => {
-                const btn = document.createElement('button');
-                btn.className = 'coin-btn';
-                btn.id = `coin-${denom}`;
-                btn.dataset.denomination = denom;
-                btn.onclick = () => toggleCoin(denom);
-                btn.disabled = cashRegister[denom] === 0;
-                btn.innerHTML = `
-                    <div class="coin-value">$${parseFloat(denom).toFixed(2)}</div>
-                    <div class="coin-stock">×${cashRegister[denom]}</div>
-                `;
-                grid.appendChild(btn);
-            });
-        }
-
-        /**
-         * 切换币额选择（点击选中，再点取消）
-         */
-        function toggleCoin(denomination) {
-            if (gameState.phase !== 'making_change') return;
-
-            const btn = document.getElementById(`coin-${denomination}`);
-            const stock = cashRegister[denomination];
-            const selectedCount = gameState.selectedCoins[denomination] || 0;
-
-            if (btn.classList.contains('selected')) {
-                // 取消选择
-                if (selectedCount > 0) {
-                    gameState.selectedCoins[denomination] = selectedCount - 1;
-                    gameState.selectedAmount -= parseFloat(denomination);
-                    gameState.selectedAmount = parseFloat(gameState.selectedAmount.toFixed(2));
-
-                    if (gameState.selectedCoins[denomination] === 0) {
-                        delete gameState.selectedCoins[denomination];
-                        btn.classList.remove('selected');
-                    }
-                }
-            } else {
-                // 添加选择
-                if (selectedCount >= stock) {
-                    showTempMessage('No more of this denomination!');
-                    return;
-                }
-
-                gameState.selectedCoins[denomination] = selectedCount + 1;
-                gameState.selectedAmount += parseFloat(denomination);
-                gameState.selectedAmount = parseFloat(gameState.selectedAmount.toFixed(2));
-                btn.classList.add('selected');
-            }
-
-            updateSelectedAmount();
-            updateCoinButtons();
-        }
-
-        /**
-         * 重选
-         */
-        function resetSelection() {
-            gameState.selectedCoins = {};
-            gameState.selectedAmount = 0;
-
-            // 移除所有高亮
-            document.querySelectorAll('.coin-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-
-            updateSelectedAmount();
-            updateCoinButtons();
-        }
-
-        /**
-         * 更新币额按钮显示
-         */
-        function updateCoinButtons() {
-            const denominations = ['0.05', '0.10', '0.20', '0.50', '1', '2', '5', '10', '50'];
-            denominations.forEach(denom => {
-                const btn = document.getElementById(`coin-${denom}`);
-                if (btn) {
-                    const selectedCount = gameState.selectedCoins[denom] || 0;
-                    const stock = cashRegister[denom];
-
-                    // 更新库存显示（显示剩余可选数量）
-                    const stockEl = btn.querySelector('.coin-stock');
-                    if (selectedCount > 0) {
-                        stockEl.textContent = `Selected ×${selectedCount} (${stock - selectedCount} left)`;
-                    } else {
-                        stockEl.textContent = `×${stock}`;
-                    }
-                }
-            });
-        }
-
-        /**
-         * 更新已选金额显示
-         */
-        function updateSelectedAmount() {
-            document.getElementById('selectedAmount').textContent = `$${gameState.selectedAmount.toFixed(2)}`;
-        }
-
-        /**
-         * 确认找零
-         */
-        function confirmChange() {
-            if (gameState.phase !== 'making_change') return;
-
-            if (Object.keys(gameState.selectedCoins).length === 0) {
-                showTempMessage('Please select coins first!');
-                return;
-            }
-
-            const selectedAmount = gameState.selectedAmount;
-            const correctChange = gameState.currentCustomer.correctChange;
-
-            gameState.phase = 'result';
-
-            // 判断是否正确
-            const isCorrect = Math.abs(selectedAmount - correctChange) < 0.01;
-
-            // 显示反馈
-            const overlay = document.getElementById('feedbackOverlay');
-            const emoji = document.getElementById('feedbackEmoji');
-            const text = document.getElementById('feedbackText');
-
-            if (isCorrect) {
-                emoji.textContent = '😊';
-                text.textContent = 'Perfect! Customer is happy!\nCorrect change!';
-                gameState.score++;
-            } else {
-                emoji.textContent = '😡';
-                text.textContent = `Customer is angry!\nYou gave $${selectedAmount.toFixed(2)}\nShould be $${correctChange.toFixed(2)}`;
-                gameState.score = 0;
-            }
-
-            overlay.classList.add('show');
         }
 
         /**
@@ -1600,8 +1483,8 @@
             // 显示计算器
             document.getElementById('cashierArea').classList.remove('hidden');
 
-            // 初始化计算器显示
-            updateDisplay();
+            // 初始化等式记录器显示
+            updateEquationDisplay();
 
             // 开始第一轮
             startOrder();

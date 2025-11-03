@@ -364,12 +364,24 @@
             z-index: 50;
         }
 
+        /* 计算器提示文字 */
+        .calculator-hint {
+            text-align: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+
+        /* 计算器显示屏 */
         .calculator-display {
             background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
             border-radius: 15px;
-            padding: 20px;
+            padding: 25px 20px;  /* 增加padding让显示屏更宽 */
             margin-bottom: 30px;
-            min-height: 80px;
+            min-height: 90px;  /* 增加最小高度 */
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
         }
 
@@ -403,29 +415,29 @@
         }
 
         /* 倒三角形按钮布局 */
-        /* 第1排：1 2 3 4 (横坐标对齐，等间距) */
+        /* 第1排：1 2 3 4 */
         .btn-1 { left: 90px; top: 30px; }
         .btn-2 { left: 190px; top: 30px; }
         .btn-3 { left: 290px; top: 30px; }
         .btn-4 { left: 390px; top: 30px; }
 
-        /* 第2排：5 6 7 (居中对齐，等间距) */
+        /* 第2排：5 6 7 和 Backspace */
         .btn-5 { left: 140px; top: 130px; }
         .btn-6 { left: 240px; top: 130px; }
         .btn-7 { left: 340px; top: 130px; }
-
-        /* 第3排：8 9 (居中对齐，等间距) */
-        .btn-8 { left: 190px; top: 230px; }
-        .btn-9 { left: 290px; top: 230px; }
-
-        /* 第4排：0 和 Backspace (居中对齐) */
-        .btn-0 { left: 190px; top: 330px; }
         .btn-backspace {
-            left: 290px;
-            top: 330px;
+            left: 440px;
+            top: 130px;
             background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
             font-size: 36px;
         }
+
+        /* 第3排：8 9 */
+        .btn-8 { left: 190px; top: 230px; }
+        .btn-9 { left: 290px; top: 230px; }
+
+        /* 第4排：0 (在8和9的中间位置) */
+        .btn-0 { left: 240px; top: 330px; }
 
         .calc-button:hover {
             transform: scale(1.1);
@@ -707,6 +719,9 @@
 
             <!-- 计算器区域 -->
             <div class="cashier-area" id="cashierArea">
+                <!-- 提示文字 -->
+                <div class="calculator-hint">Please enter the change amount</div>
+
                 <!-- 显示屏 -->
                 <div class="calculator-display">
                     <div class="calculator-question" id="calculatorQuestion">0</div>
@@ -720,18 +735,18 @@
                     <button class="calc-button btn-3" onclick="inputNumber(3)">3</button>
                     <button class="calc-button btn-4" onclick="inputNumber(4)">4</button>
 
-                    <!-- 第2排：5 6 7 -->
+                    <!-- 第2排：5 6 7 和 Backspace -->
                     <button class="calc-button btn-5" onclick="inputNumber(5)">5</button>
                     <button class="calc-button btn-6" onclick="inputNumber(6)">6</button>
                     <button class="calc-button btn-7" onclick="inputNumber(7)">7</button>
+                    <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
 
                     <!-- 第3排：8 9 -->
                     <button class="calc-button btn-8" onclick="inputNumber(8)">8</button>
                     <button class="calc-button btn-9" onclick="inputNumber(9)">9</button>
 
-                    <!-- 第4排：0 和 Backspace -->
+                    <!-- 第4排：0 -->
                     <button class="calc-button btn-0" onclick="inputNumber(0)">0</button>
-                    <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
                 </div>
 
                 <!-- 操作按钮 -->

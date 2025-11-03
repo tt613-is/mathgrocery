@@ -1435,9 +1435,10 @@
             const order = gameState.currentCustomer.order;
             const orderText = order.map(item => {
                 const product = PRODUCTS[item.productId];
-                // 对于甜甜圈，显示名称（包含A/B/C）；对于其他商品，只显示表情符号
+                // 对于甜甜圈，在表情符号后添加类型字母（A/B/C）
                 if (item.productId.startsWith('donut_')) {
-                    return `${product.name} ${product.emoji} x${item.quantity}`;
+                    const donutType = item.productId.split('_')[1].toUpperCase(); // 提取 a/b/c 并转为大写
+                    return `${product.emoji}${donutType} x${item.quantity}`;
                 } else {
                     return `${product.emoji} x${item.quantity}`;
                 }

@@ -6,7 +6,75 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-### 🏷️ Price Label System
+## [0.4.0] - 2025-01-04
+
+### 🎯 Major Changes: 等式记录器重构 (Equation Recorder)
+
+**核心概念转变**：从实物币额选择改为等式记录器输入
+
+### Added
+- **等式记录器系统**：全新的输入方式
+  - 倒三角形按钮布局（1234 → 567 → 89 → 0🔙）
+  - 绿色渐变显示屏（#4caf50 → #66bb6a）
+  - 红色圆形送出按钮（⬆️）在显示屏右侧
+  - 支持完整等式输入（如：`10-7.5=2.5`）
+  - 支持直接结果输入（如：`2.5`）
+  - 退格删除功能（🔙按钮）
+
+- **配置管理系统**：
+  - `game-config.json` - 外部JSON配置文件
+  - `config.html` - 可视化配置页面（3列布局：货架列表 | 编辑表单 | 实时预览）
+  - `CONFIG_GUIDE.md` - 图形界面配置指南（400+行）
+  - `JSON_GUIDE.md` - JSON直接编辑指南（500+行）
+  - 配置加载机制：优先外部JSON，失败则使用内嵌默认配置
+
+- **配置功能**：
+  - 可视化编辑货架位置和尺寸
+  - 导出/导入JSON配置文件
+  - 保存到LocalStorage
+  - 实时预览效果
+
+### Changed
+- **计算器布局**：
+  - 按钮布局从散列改为倒三角形（inverted triangle）
+  - 送出按钮从按钮网格移到显示屏右侧
+  - 显示屏宽度缩短为 `flex: 1`，为送出按钮腾出空间
+  - 添加提示文字："Enter equation or result (e.g., 10-7.5=2.5 or 2.5)"
+
+- **找零逻辑**：
+  - 从实物币额选择改为数字/等式输入
+  - 支持两种验证模式：提取等号右边值 或 解析整个输入
+  - 移除所有币额选择相关代码
+
+- **UI风格**：
+  - 蓝色渐变主背景（#1e3c72 → #2a5298）
+  - 黑色圆形数字按钮（70x70px）
+  - 紫色操作符按钮（+、-、×、÷、=、.）
+
+### Technical
+- **核心函数**：
+  - `inputDigit(digit)` - 添加数字到显示屏
+  - `inputSymbol(symbol)` - 添加操作符到显示屏
+  - `backspace()` - 删除最后一个字符
+  - `extractChangeAmount()` - 从等式中提取找零金额（支持两种格式）
+  - `submitChange()` - 验证找零并显示反馈
+  - `updateEquationDisplay()` - 更新显示屏内容
+
+- **配置系统架构**：
+  - 异步配置加载：`async loadConfig()`
+  - 配置渲染逻辑：`initShelfAreas()`, `renderShelfArea()`
+  - 三层分离：配置层、渲染层、样式层
+
+### Removed
+- 新加坡币系统（9种币额）
+- 实物币额选择界面
+- 钱箱管理系统
+- 币额库存显示
+- Reset按钮和币额撤销逻辑
+
+---
+
+### 🏷️ Price Label System (from v0.3.0+)
 
 **UI Improvements:**
 - 📋 **Unified Price Labels**: Each shelf area now has a single price label instead of individual item prices

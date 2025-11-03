@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学杂货店 - Math Grocery</title>
+    <style>
+        /* ==================== 全局样式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* ==================== 游戏容器 ==================== */
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ==================== 标题区 ==================== */
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* ==================== 货架区域 ==================== */
+        .shelf-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .product-card {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .product-card:active {
+            transform: translateY(0);
+        }
+
+        .product-emoji {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            font-size: 16px;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        /* ==================== 购物车区域 ==================== */
+        .cart-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 150px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            color: #999;
+            padding: 40px 0;
+        }
+
+        .cart-items {
+            list-style: none;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-emoji {
+            font-size: 24px;
+        }
+
+        .item-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .item-remove:hover {
+            background: #c82333;
+        }
+
+        /* ==================== 总价区域 ==================== */
+        .total-section {
+            background: #fff3cd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .info-value {
+            color: #d63031;
+            font-weight: bold;
+            font-size: 22px;
+        }
+
+        /* ==================== 找零区域 ==================== */
+        .change-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .change-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .change-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* ==================== 按钮样式 ==================== */
+        .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-secondary {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #00a383;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.6;
+        }
+
+        /* ==================== 反馈区域 ==================== */
+        .feedback {
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback-correct {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .feedback-wrong {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .feedback-emoji {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        /* ==================== 隐藏元素 ==================== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 10px;
+            }
+
+            .product-card {
+                padding: 10px;
+            }
+
+            .product-emoji {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏标题 -->
+        <h1>🏪 数学杂货店</h1>
+        <p class="subtitle">选择商品，计算找零，当个好老板！</p>
+
+        <!-- 货架区域 -->
+        <div class="shelf-section" id="shelfSection">
+            <div class="section-title">🛒 点击商品添加到购物车</div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <!-- 购物车区域 -->
+        <div class="cart-section">
+            <div class="section-title">🛍️ 购物车</div>
+            <div id="cartEmpty" class="cart-empty">
+                点击上方商品添加到购物车
+            </div>
+            <ul id="cartItems" class="cart-items hidden"></ul>
+        </div>
+
+        <!-- 确认订单按钮 -->
+        <button class="btn btn-success hidden" id="confirmOrderBtn" onclick="confirmOrder()">
+            ✓ 确认订单
+        </button>
+
+        <!-- 总价和支付金额 -->
+        <div class="total-section hidden" id="totalSection">
+            <div class="info-row">
+                <span class="info-label">总价：</span>
+                <span class="info-value" id="totalPrice">$0.00</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">顾客支付：</span>
+                <span class="info-value" id="customerPaid">$0.00</span>
+            </div>
+        </div>
+
+        <!-- 找零输入区域 -->
+        <div class="change-section hidden" id="changeSection">
+            <label class="input-label" for="changeInput">💰 应找零金额：</label>
+            <input
+                type="number"
+                id="changeInput"
+                class="change-input"
+                placeholder="输入找零金额"
+                min="0"
+                step="0.01"
+            >
+        </div>
+
+        <!-- 提交找零按钮 -->
+        <button class="btn btn-primary hidden" id="submitBtn" onclick="checkAnswer()">
+            ✓ 确认找零
+        </button>
+
+        <!-- 反馈区域 -->
+        <div class="feedback" id="feedback">
+            <div class="feedback-emoji" id="feedbackEmoji"></div>
+            <div id="feedbackText"></div>
+        </div>
+
+        <!-- 下一单按钮 -->
+        <button class="btn btn-secondary hidden" id="nextBtn" onclick="nextRound()">
+            🎯 再来一单
+        </button>
+    </div>
+
+    <script>
+        /**
+         * ==================== 游戏数据 ====================
+         */
+
+        /**
+         * 商品库
+         * @type {Array<{id: string, name: string, emoji: string, price: number}>}
+         */
+        const products = [
+            { id: 'apple', name: "苹果", emoji: "🍎", price: 1 },
+            { id: 'donut_a', name: "甜甜圈A", emoji: "🍩", price: 2 },
+            { id: 'donut_b', name: "甜甜圈B", emoji: "🍩", price: 2.5 },
+            { id: 'donut_c', name: "甜甜圈C", emoji: "🍩", price: 2.7 },
+            { id: 'meat', name: "肉", emoji: "🥩", price: 56.3 },
+            { id: 'fish', name: "鱼", emoji: "🐟", price: 56.3 },
+            { id: 'drumstick', name: "鸡腿", emoji: "🍗", price: 56.3 },
+            { id: 'milk', name: "Milk", emoji: "🥛", price: 5 },
+            { id: 'chips', name: "薯片", emoji: "🍟", price: 1.2 },
+            { id: 'eraser', name: "橡皮", emoji: "🧽", price: 3 },
+            { id: 'lollipop', name: "棒棒糖", emoji: "🍭", price: 0.5 }
+        ];
+
+        /**
+         * 游戏状态
+         */
+        let gameState = {
+            phase: 'selecting', // selecting, checkout, result
+            cart: [],
+            total: 0,
+            customerPaid: 0,
+            correctChange: 0
+        };
+
+        /**
+         * ==================== 核心函数 ====================
+         */
+
+        /**
+         * 初始化货架
+         */
+        function initShelf() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => addToCart(product);
+                card.innerHTML = `
+                    <div class="product-emoji">${product.emoji}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">$${product.price.toFixed(2)}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        /**
+         * 添加商品到购物车
+         */
+        function addToCart(product) {
+            if (gameState.phase !== 'selecting') return;
+
+            gameState.cart.push({...product});
+            updateCart();
+        }
+
+        /**
+         * 从购物车移除商品
+         */
+        function removeFromCart(index) {
+            if (gameState.phase !== 'selecting') return;
+
+            gameState.cart.splice(index, 1);
+            updateCart();
+        }
+
+        /**
+         * 更新购物车显示
+         */
+        function updateCart() {
+            const cartEmpty = document.getElementById('cartEmpty');
+            const cartItems = document.getElementById('cartItems');
+            const confirmBtn = document.getElementById('confirmOrderBtn');
+
+            if (gameState.cart.length === 0) {
+                cartEmpty.classList.remove('hidden');
+                cartItems.classList.add('hidden');
+                confirmBtn.classList.add('hidden');
+            } else {
+                cartEmpty.classList.add('hidden');
+                cartItems.classList.remove('hidden');
+                confirmBtn.classList.remove('hidden');
+
+                // 渲染购物车商品
+                cartItems.innerHTML = '';
+                gameState.cart.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'cart-item';
+                    li.innerHTML = `
+                        <div class="item-info">
+                            <span class="item-emoji">${item.emoji}</span>
+                            <span>${item.name}</span>
+                            <span class="product-price">$${item.price.toFixed(2)}</span>
+                        </div>
+                        <button class="item-remove" onclick="removeFromCart(${index})">×</button>
+                    `;
+                    cartItems.appendChild(li);
+                });
+            }
+        }
+
+        /**
+         * 确认订单
+         */
+        function confirmOrder() {
+            if (gameState.cart.length === 0) {
+                alert('请先选择商品！');
+                return;
+            }
+
+            // 切换到结账阶段
+            gameState.phase = 'checkout';
+
+            // 计算总价
+            gameState.total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
+            gameState.total = parseFloat(gameState.total.toFixed(2));
+
+            // 生成顾客支付金额 (总价 + 随机 1-5 美元)
+            const extraMoney = Math.floor(Math.random() * 5) + 1;
+            gameState.customerPaid = parseFloat((gameState.total + extraMoney).toFixed(2));
+
+            // 计算正确找零
+            gameState.correctChange = parseFloat((gameState.customerPaid - gameState.total).toFixed(2));
+
+            // 更新UI
+            document.getElementById('shelfSection').classList.add('hidden');
+            document.getElementById('confirmOrderBtn').classList.add('hidden');
+            document.getElementById('totalSection').classList.remove('hidden');
+            document.getElementById('changeSection').classList.remove('hidden');
+            document.getElementById('submitBtn').classList.remove('hidden');
+
+            document.getElementById('totalPrice').textContent = `$${gameState.total.toFixed(2)}`;
+            document.getElementById('customerPaid').textContent = `$${gameState.customerPaid.toFixed(2)}`;
+
+            // 聚焦到输入框
+            document.getElementById('changeInput').focus();
+        }
+
+        /**
+         * 检查找零答案
+         */
+        function checkAnswer() {
+            const inputElement = document.getElementById('changeInput');
+            const userAnswer = parseFloat(inputElement.value);
+
+            // 验证输入
+            if (isNaN(userAnswer) || userAnswer < 0) {
+                alert('请输入有效的金额！');
+                return;
+            }
+
+            gameState.phase = 'result';
+
+            // 获取反馈元素
+            const feedback = document.getElementById('feedback');
+            const feedbackEmoji = document.getElementById('feedbackEmoji');
+            const feedbackText = document.getElementById('feedbackText');
+
+            // 判断是否正确
+            if (userAnswer.toFixed(2) === gameState.correctChange.toFixed(2)) {
+                feedback.className = 'feedback feedback-correct show';
+                feedbackEmoji.textContent = '😊';
+                feedbackText.textContent = '太棒了！顾客很满意！';
+            } else {
+                feedback.className = 'feedback feedback-wrong show';
+                feedbackEmoji.textContent = '😡';
+                feedbackText.textContent = `顾客生气了！正确答案是 $${gameState.correctChange.toFixed(2)}`;
+            }
+
+            // 禁用输入和按钮
+            inputElement.disabled = true;
+            document.getElementById('submitBtn').disabled = true;
+
+            // 显示下一单按钮
+            document.getElementById('nextBtn').classList.remove('hidden');
+        }
+
+        /**
+         * 开始下一轮
+         */
+        function nextRound() {
+            // 重置游戏状态
+            gameState = {
+                phase: 'selecting',
+                cart: [],
+                total: 0,
+                customerPaid: 0,
+                correctChange: 0
+            };
+
+            // 重置UI
+            document.getElementById('shelfSection').classList.remove('hidden');
+            document.getElementById('totalSection').classList.add('hidden');
+            document.getElementById('changeSection').classList.add('hidden');
+            document.getElementById('submitBtn').classList.add('hidden');
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextBtn').classList.add('hidden');
+
+            document.getElementById('changeInput').value = '';
+            document.getElementById('changeInput').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+
+            updateCart();
+        }
+
+        /**
+         * ==================== 游戏初始化 ====================
+         */
+        window.addEventListener('DOMContentLoaded', function() {
+            initShelf();
+            updateCart();
+
+            // 支持回车键提交
+            document.getElementById('changeInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !this.disabled) {
+                    checkAnswer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

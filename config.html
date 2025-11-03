@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Grocery - 配置编辑器</title>
+    <style>
+        /* ==================== 全局样式 ==================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* ==================== 主容器 ==================== */
+        .config-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 40px);
+        }
+
+        /* ==================== 头部 ==================== */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* ==================== 主内容区域 ==================== */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ==================== 左侧货架列表 (20%) ==================== */
+        .shelf-list {
+            width: 20%;
+            border-right: 2px solid #e0e0e0;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .shelf-list-header {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .shelf-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .shelf-item:hover {
+            background: #f0f0f0;
+        }
+
+        .shelf-item.active {
+            background: #e8eaf6;
+            border-left: 4px solid #667eea;
+        }
+
+        .shelf-item-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .shelf-item-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .add-shelf-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .add-shelf-btn:hover {
+            background: #5568d3;
+        }
+
+        /* ==================== 中间编辑区域 (50%) ==================== */
+        .edit-area {
+            width: 50%;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .edit-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .input-group select {
+            width: 80px;
+        }
+
+        /* ==================== 产品选择器 ==================== */
+        .product-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .product-option {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .product-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .product-option.selected {
+            border-color: #667eea;
+            background: #e8eaf6;
+        }
+
+        .product-emoji {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .product-name {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .product-count {
+            margin-top: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        /* ==================== 价格标签编辑器 ==================== */
+        .price-label-editor {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .price-items-list {
+            margin-top: 10px;
+        }
+
+        .price-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .remove-item-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-item-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* ==================== 右侧预览区域 (30%) ==================== */
+        .preview-area {
+            width: 30%;
+            border-left: 2px solid #e0e0e0;
+            overflow-y: auto;
+            background: #f5f5f5;
+        }
+
+        .preview-header {
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .preview-content {
+            padding: 20px;
+        }
+
+        .preview-shelf {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .preview-shelf-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .preview-info {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .preview-products {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .preview-product {
+            font-size: 24px;
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* ==================== 底部操作栏 ==================== */
+        .footer-actions {
+            padding: 20px 30px;
+            background: #f5f5f5;
+            border-top: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #4caf50;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #45a049;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #fb8c00;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #e53935;
+        }
+
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #e8eaf6;
+        }
+
+        /* ==================== 文件上传隐藏 ==================== */
+        .file-input {
+            display: none;
+        }
+
+        /* ==================== 通知提示 ==================== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            background: #4caf50;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.info {
+            background: #2196f3;
+        }
+
+        /* ==================== 空状态 ==================== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+        }
+
+        /* ==================== 删除按钮 ==================== */
+        .delete-shelf-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .delete-shelf-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🛒 Math Grocery 配置编辑器</h1>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="previewGame()">🎮 预览游戏</button>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 左侧货架列表 -->
+            <div class="shelf-list">
+                <div class="shelf-list-header">货架列表</div>
+                <div id="shelfListContainer"></div>
+                <button class="add-shelf-btn" onclick="addNewShelf()">+ 添加新货架</button>
+            </div>
+
+            <!-- 中间编辑区域 -->
+            <div class="edit-area" id="editArea">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📝</div>
+                    <div class="empty-state-text">请从左侧选择一个货架进行编辑</div>
+                </div>
+            </div>
+
+            <!-- 右侧预览区域 -->
+            <div class="preview-area">
+                <div class="preview-header">实时预览</div>
+                <div class="preview-content" id="previewContent">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👁️</div>
+                        <div class="empty-state-text">选择货架查看预览</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="footer-actions">
+            <div class="action-group">
+                <button class="btn btn-primary" onclick="saveConfig()">💾 保存到本地存储</button>
+                <button class="btn btn-secondary" onclick="exportConfig()">📥 导出JSON文件</button>
+                <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">📤 加载JSON文件</button>
+                <input type="file" id="fileInput" class="file-input" accept=".json" onchange="loadConfig(event)">
+            </div>
+            <div class="action-group">
+                <button class="btn btn-warning" onclick="resetConfig()">🔄 重置为默认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 全局状态 ====================
+        let config = null;
+        let selectedShelfIndex = null;
+        let productCounts = {};
+
+        // ==================== 初始化 ====================
+        async function init() {
+            // 尝试从LocalStorage加载
+            const savedConfig = localStorage.getItem('mathGroceryConfig');
+            if (savedConfig) {
+                config = JSON.parse(savedConfig);
+                showNotification('已从本地存储加载配置', 'info');
+            } else {
+                // 加载默认配置
+                try {
+                    const response = await fetch('game-config.json');
+                    config = await response.json();
+                    showNotification('已加载默认配置', 'info');
+                } catch (error) {
+                    console.error('加载配置失败:', error);
+                    showNotification('加载配置失败，使用空配置', 'error');
+                    config = createEmptyConfig();
+                }
+            }
+            renderShelfList();
+        }
+
+        // ==================== 创建空配置 ====================
+        function createEmptyConfig() {
+            return {
+                version: "0.3.1",
+                customerArea: {
+                    height: "25vh",
+                    background: "linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%)"
+                },
+                products: {
+                    lollipop: { name: "棒棒糖", emoji: "🍭", price: 0.50 },
+                    apple: { name: "苹果", emoji: "🍎", price: 1.00 },
+                    donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.50 },
+                    donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.55 },
+                    donut_c: { name: "甜甜圈C", emoji: "🍩", price: 2.75 },
+                    chips: { name: "薯片", emoji: "🍟", price: 1.20 },
+                    orange: { name: "橙子", emoji: "🍊", price: 3.00 },
+                    milk: { name: "牛奶", emoji: "🥛", price: 1.50 },
+                    meat: { name: "肉", emoji: "🥩", price: 15.00 },
+                    fish: { name: "鱼", emoji: "🐟", price: 15.00 },
+                    chicken: { name: "鸡腿", emoji: "🍗", price: 15.00 }
+                },
+                shelves: [],
+                cashRegister: {
+                    "0.05": 10, "0.10": 10, "0.20": 10, "0.50": 10,
+                    "1": 20, "2": 10, "5": 10, "10": 10, "50": 5
+                }
+            };
+        }
+
+        // ==================== 渲染货架列表 ====================
+        function renderShelfList() {
+            const container = document.getElementById('shelfListContainer');
+            container.innerHTML = '';
+
+            if (!config.shelves || config.shelves.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-text">暂无货架</div></div>';
+                return;
+            }
+
+            config.shelves.forEach((shelf, index) => {
+                const item = document.createElement('div');
+                item.className = 'shelf-item';
+                if (index === selectedShelfIndex) {
+                    item.classList.add('active');
+                }
+                item.onclick = () => selectShelf(index);
+
+                item.innerHTML = `
+                    <div class="shelf-item-name">${shelf.name}</div>
+                    <div class="shelf-item-meta">ID: ${shelf.id} | 类型: ${shelf.type}</div>
+                `;
+
+                container.appendChild(item);
+            });
+        }
+
+        // ==================== 选择货架 ====================
+        function selectShelf(index) {
+            selectedShelfIndex = index;
+            renderShelfList();
+            renderEditArea();
+            renderPreview();
+        }
+
+        // ==================== 渲染编辑区域 ====================
+        function renderEditArea() {
+            if (selectedShelfIndex === null) return;
+
+            const shelf = config.shelves[selectedShelfIndex];
+            const editArea = document.getElementById('editArea');
+
+            // 统计产品数量
+            productCounts = {};
+            const flatProducts = flattenProducts(shelf.products);
+            flatProducts.forEach(productId => {
+                productCounts[productId] = (productCounts[productId] || 0) + 1;
+            });
+
+            editArea.innerHTML = `
+                <!-- 基本信息 -->
+                <div class="edit-section">
+                    <div class="section-title">基本信息</div>
+
+                    <div class="form-group">
+                        <label class="form-label">货架名称</label>
+                        <input type="text" class="form-input" value="${shelf.name}"
+                               onchange="updateShelf('name', this.value)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">货架ID</label>
+                        <input type="text" class="form-input" value="${shelf.id}"
+                               onchange="updateShelf('id', this.value)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">货架类型</label>
+                        <input type="text" class="form-input" value="${shelf.type}"
+                               onchange="updateShelf('type', this.value)">
+                    </div>
+                </div>
+
+                <!-- 位置设置 -->
+                <div class="edit-section">
+                    <div class="section-title">位置设置</div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">Left</label>
+                            <div class="input-group">
+                                <input type="text" class="form-input" value="${shelf.position.left || ''}"
+                                       onchange="updatePosition('left', this.value)">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Right</label>
+                            <div class="input-group">
+                                <input type="text" class="form-input" value="${shelf.position.right || ''}"
+                                       onchange="updatePosition('right', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">Top</label>
+                            <div class="input-group">
+                                <input type="text" class="form-input" value="${shelf.position.top || ''}"
+                                       onchange="updatePosition('top', this.value)">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Bottom</label>
+                            <div class="input-group">
+                                <input type="text" class="form-input" value="${shelf.position.bottom || ''}"
+                                       onchange="updatePosition('bottom', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 尺寸设置 -->
+                <div class="edit-section">
+                    <div class="section-title">尺寸设置</div>
+
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">Width</label>
+                            <input type="text" class="form-input" value="${shelf.size.width}"
+                                   onchange="updateSize('width', this.value)">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Height</label>
+                            <input type="text" class="form-input" value="${shelf.size.height}"
+                                   onchange="updateSize('height', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 布局设置 -->
+                <div class="edit-section">
+                    <div class="section-title">布局设置</div>
+
+                    <div class="form-group">
+                        <label class="form-label">布局类型</label>
+                        <select class="form-select" onchange="updateShelf('layout', this.value)">
+                            <option value="vertical" ${shelf.layout === 'vertical' ? 'selected' : ''}>垂直布局 (vertical)</option>
+                            <option value="grid" ${shelf.layout === 'grid' ? 'selected' : ''}>网格布局 (grid)</option>
+                            <option value="rows" ${shelf.layout === 'rows' ? 'selected' : ''}>分层布局 (rows)</option>
+                            <option value="scattered" ${shelf.layout === 'scattered' ? 'selected' : ''}>散列布局 (scattered)</option>
+                            <option value="mixed" ${shelf.layout === 'mixed' ? 'selected' : ''}>混合布局 (mixed)</option>
+                        </select>
+                    </div>
+
+                    ${shelf.layout === 'grid' ? `
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">行数 (Rows)</label>
+                            <input type="number" class="form-input" value="${shelf.gridConfig?.rows || 2}"
+                                   onchange="updateGridConfig('rows', parseInt(this.value))">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">列数 (Cols)</label>
+                            <input type="number" class="form-input" value="${shelf.gridConfig?.cols || 3}"
+                                   onchange="updateGridConfig('cols', parseInt(this.value))">
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- 商品选择 -->
+                <div class="edit-section">
+                    <div class="section-title">商品选择</div>
+                    <div class="product-selector" id="productSelector"></div>
+                </div>
+
+                <!-- 价格标签 -->
+                <div class="edit-section">
+                    <div class="section-title">价格标签</div>
+                    <div class="price-label-editor" id="priceLabelEditor"></div>
+                </div>
+
+                <!-- 删除货架 -->
+                <div class="edit-section">
+                    <button class="delete-shelf-btn" onclick="deleteShelf()">🗑️ 删除此货架</button>
+                </div>
+            `;
+
+            renderProductSelector();
+            renderPriceLabelEditor();
+        }
+
+        // ==================== 渲染产品选择器 ====================
+        function renderProductSelector() {
+            const container = document.getElementById('productSelector');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            Object.keys(config.products).forEach(productId => {
+                const product = config.products[productId];
+                const count = productCounts[productId] || 0;
+
+                const option = document.createElement('div');
+                option.className = 'product-option';
+                if (count > 0) {
+                    option.classList.add('selected');
+                }
+
+                option.innerHTML = `
+                    <div class="product-emoji">${product.emoji}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-count">x${count}</div>
+                `;
+
+                option.onclick = () => toggleProduct(productId);
+                container.appendChild(option);
+            });
+        }
+
+        // ==================== 切换产品 ====================
+        function toggleProduct(productId) {
+            const shelf = config.shelves[selectedShelfIndex];
+            const flatProducts = flattenProducts(shelf.products);
+
+            const index = flatProducts.indexOf(productId);
+            if (index > -1) {
+                // 移除一个
+                flatProducts.splice(index, 1);
+            } else {
+                // 添加一个
+                flatProducts.push(productId);
+            }
+
+            // 根据布局类型重建products数组
+            if (shelf.layout === 'rows') {
+                // 保持原有的行结构，只修改items
+                shelf.products = shelf.products.map(row => ({
+                    row: row.row,
+                    items: []
+                }));
+                // 简化：将所有产品放入第一行
+                if (shelf.products.length > 0) {
+                    shelf.products[0].items = flatProducts;
+                }
+            } else {
+                shelf.products = flatProducts;
+            }
+
+            renderEditArea();
+            renderPreview();
+        }
+
+        // ==================== 扁平化产品列表 ====================
+        function flattenProducts(products) {
+            if (!Array.isArray(products)) return [];
+
+            const flat = [];
+            products.forEach(item => {
+                if (typeof item === 'string') {
+                    flat.push(item);
+                } else if (item.items && Array.isArray(item.items)) {
+                    flat.push(...item.items);
+                }
+            });
+            return flat;
+        }
+
+        // ==================== 渲染价格标签编辑器 ====================
+        function renderPriceLabelEditor() {
+            const container = document.getElementById('priceLabelEditor');
+            if (!container) return;
+
+            const shelf = config.shelves[selectedShelfIndex];
+            const priceLabel = shelf.priceLabel || { show: false };
+
+            container.innerHTML = `
+                <div class="toggle-switch">
+                    <label class="switch">
+                        <input type="checkbox" ${priceLabel.show ? 'checked' : ''}
+                               onchange="updatePriceLabel('show', this.checked)">
+                        <span class="slider"></span>
+                    </label>
+                    <span>显示价格标签</span>
+                </div>
+
+                ${priceLabel.show ? `
+                    <div class="form-group">
+                        <label class="form-label">标签位置</label>
+                        <select class="form-select" onchange="updatePriceLabel('position', this.value)">
+                            <option value="right" ${priceLabel.position === 'right' ? 'selected' : ''}>右侧</option>
+                            <option value="left" ${priceLabel.position === 'left' ? 'selected' : ''}>左侧</option>
+                            <option value="top" ${priceLabel.position === 'top' ? 'selected' : ''}>顶部</option>
+                            <option value="bottom" ${priceLabel.position === 'bottom' ? 'selected' : ''}>底部</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">产品名称</label>
+                        <input type="text" class="form-input" value="${priceLabel.productName || ''}"
+                               onchange="updatePriceLabel('productName', this.value)">
+                    </div>
+
+                    ${!priceLabel.items ? `
+                    <div class="form-group">
+                        <label class="form-label">价格</label>
+                        <input type="text" class="form-input" value="${priceLabel.price || ''}"
+                               onchange="updatePriceLabel('price', this.value)">
+                    </div>
+                    ` : ''}
+
+                    <div class="form-group">
+                        <label class="form-label">单位</label>
+                        <input type="text" class="form-input" value="${priceLabel.unit || 'each'}"
+                               onchange="updatePriceLabel('unit', this.value)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">折扣信息</label>
+                        <input type="text" class="form-input" value="${priceLabel.discount || ''}"
+                               placeholder="例如: 2 for $0.90"
+                               onchange="updatePriceLabel('discount', this.value || null)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">价格列表（多商品货架）</label>
+                        <div class="price-items-list" id="priceItemsList">
+                            ${(priceLabel.items || []).map((item, idx) => `
+                                <div class="price-item">
+                                    <input type="text" class="form-input" placeholder="商品名"
+                                           value="${item.name}"
+                                           onchange="updatePriceItem(${idx}, 'name', this.value)">
+                                    <input type="text" class="form-input" placeholder="价格"
+                                           value="${item.price}"
+                                           onchange="updatePriceItem(${idx}, 'price', this.value)">
+                                    <button class="remove-item-btn" onclick="removePriceItem(${idx})">删除</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="add-item-btn" onclick="addPriceItem()">+ 添加商品</button>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // ==================== 更新货架属性 ====================
+        function updateShelf(key, value) {
+            if (selectedShelfIndex === null) return;
+            config.shelves[selectedShelfIndex][key] = value;
+            renderShelfList();
+            renderPreview();
+        }
+
+        function updatePosition(key, value) {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            if (value === '') {
+                delete shelf.position[key];
+            } else {
+                shelf.position[key] = value;
+            }
+            renderPreview();
+        }
+
+        function updateSize(key, value) {
+            if (selectedShelfIndex === null) return;
+            config.shelves[selectedShelfIndex].size[key] = value;
+            renderPreview();
+        }
+
+        function updateGridConfig(key, value) {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            if (!shelf.gridConfig) shelf.gridConfig = {};
+            shelf.gridConfig[key] = value;
+            renderPreview();
+        }
+
+        function updatePriceLabel(key, value) {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            if (!shelf.priceLabel) shelf.priceLabel = {};
+            shelf.priceLabel[key] = value;
+            renderPriceLabelEditor();
+            renderPreview();
+        }
+
+        function updatePriceItem(index, key, value) {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            if (!shelf.priceLabel.items) shelf.priceLabel.items = [];
+            shelf.priceLabel.items[index][key] = value;
+            renderPreview();
+        }
+
+        function addPriceItem() {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            if (!shelf.priceLabel.items) shelf.priceLabel.items = [];
+            shelf.priceLabel.items.push({ name: '', price: '' });
+            renderPriceLabelEditor();
+        }
+
+        function removePriceItem(index) {
+            if (selectedShelfIndex === null) return;
+            const shelf = config.shelves[selectedShelfIndex];
+            shelf.priceLabel.items.splice(index, 1);
+            renderPriceLabelEditor();
+            renderPreview();
+        }
+
+        // ==================== 渲染预览 ====================
+        function renderPreview() {
+            const container = document.getElementById('previewContent');
+            if (selectedShelfIndex === null) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👁️</div>
+                        <div class="empty-state-text">选择货架查看预览</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const shelf = config.shelves[selectedShelfIndex];
+            const flatProducts = flattenProducts(shelf.products);
+
+            container.innerHTML = `
+                <div class="preview-shelf">
+                    <div class="preview-shelf-name">${shelf.name}</div>
+                    <div class="preview-info">
+                        <strong>ID:</strong> ${shelf.id}<br>
+                        <strong>类型:</strong> ${shelf.type}<br>
+                        <strong>布局:</strong> ${shelf.layout}<br>
+                        <strong>位置:</strong> ${JSON.stringify(shelf.position)}<br>
+                        <strong>尺寸:</strong> ${shelf.size.width} x ${shelf.size.height}<br>
+                        ${shelf.gridConfig ? `<strong>网格:</strong> ${shelf.gridConfig.rows}行 x ${shelf.gridConfig.cols}列<br>` : ''}
+                        <strong>商品数量:</strong> ${flatProducts.length}
+                    </div>
+                    <div class="preview-products">
+                        ${flatProducts.map(productId => {
+                            const product = config.products[productId];
+                            return `<div class="preview-product" title="${product.name}">${product.emoji}</div>`;
+                        }).join('')}
+                    </div>
+                    ${shelf.priceLabel && shelf.priceLabel.show ? `
+                        <div class="preview-info" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0;">
+                            <strong>价格标签:</strong><br>
+                            ${shelf.priceLabel.productName ? `产品: ${shelf.priceLabel.productName}<br>` : ''}
+                            ${shelf.priceLabel.price ? `价格: ${shelf.priceLabel.price}<br>` : ''}
+                            ${shelf.priceLabel.items ? `商品列表: ${shelf.priceLabel.items.map(i => `${i.name} ${i.price}`).join(', ')}<br>` : ''}
+                            ${shelf.priceLabel.unit ? `单位: ${shelf.priceLabel.unit}<br>` : ''}
+                            ${shelf.priceLabel.discount ? `折扣: ${shelf.priceLabel.discount}` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        // ==================== 添加新货架 ====================
+        function addNewShelf() {
+            const newShelf = {
+                id: `shelf-${Date.now()}`,
+                name: "新货架",
+                type: "custom",
+                position: { left: "0", top: "0" },
+                size: { width: "200px", height: "200px" },
+                layout: "grid",
+                gridConfig: { rows: 2, cols: 2 },
+                products: [],
+                style: "shelf-area-grid",
+                priceLabel: {
+                    show: false
+                }
+            };
+
+            config.shelves.push(newShelf);
+            selectedShelfIndex = config.shelves.length - 1;
+            renderShelfList();
+            renderEditArea();
+            renderPreview();
+            showNotification('已添加新货架', 'success');
+        }
+
+        // ==================== 删除货架 ====================
+        function deleteShelf() {
+            if (selectedShelfIndex === null) return;
+
+            if (confirm('确定要删除此货架吗？')) {
+                config.shelves.splice(selectedShelfIndex, 1);
+                selectedShelfIndex = null;
+                renderShelfList();
+                document.getElementById('editArea').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">请从左侧选择一个货架进行编辑</div>
+                    </div>
+                `;
+                renderPreview();
+                showNotification('已删除货架', 'success');
+            }
+        }
+
+        // ==================== 保存配置 ====================
+        function saveConfig() {
+            try {
+                localStorage.setItem('mathGroceryConfig', JSON.stringify(config, null, 2));
+                showNotification('配置已保存到本地存储', 'success');
+            } catch (error) {
+                console.error('保存失败:', error);
+                showNotification('保存失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== 导出配置 ====================
+        function exportConfig() {
+            const dataStr = JSON.stringify(config, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'game-config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('配置已导出', 'success');
+        }
+
+        // ==================== 加载配置 ====================
+        function loadConfig(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    config = JSON.parse(e.target.result);
+                    selectedShelfIndex = null;
+                    renderShelfList();
+                    document.getElementById('editArea').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📝</div>
+                            <div class="empty-state-text">请从左侧选择一个货架进行编辑</div>
+                        </div>
+                    `;
+                    renderPreview();
+                    showNotification('配置文件加载成功', 'success');
+                } catch (error) {
+                    console.error('解析配置失败:', error);
+                    showNotification('配置文件格式错误', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ==================== 重置配置 ====================
+        async function resetConfig() {
+            if (!confirm('确定要重置为默认配置吗？当前的修改将丢失！')) return;
+
+            try {
+                const response = await fetch('game-config.json');
+                config = await response.json();
+                selectedShelfIndex = null;
+                renderShelfList();
+                document.getElementById('editArea').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <div class="empty-state-text">请从左侧选择一个货架进行编辑</div>
+                    </div>
+                `;
+                renderPreview();
+                showNotification('已重置为默认配置', 'success');
+            } catch (error) {
+                console.error('重置失败:', error);
+                showNotification('重置失败: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== 预览游戏 ====================
+        function previewGame() {
+            // 保存当前配置到sessionStorage，供index.html读取
+            sessionStorage.setItem('previewConfig', JSON.stringify(config));
+            window.open('index.html', '_blank');
+        }
+
+        // ==================== 显示通知 ====================
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // ==================== 启动应用 ====================
+        init();
+    </script>
+</body>
+</html>

@@ -807,26 +807,57 @@
          */
 
         /**
-         * 商品库（对象形式，便于查询）
+         * 配置加载系统：优先从外部JSON加载，失败则使用内嵌默认配置
          */
-        const PRODUCTS = {
-            lollipop: { name: "棒棒糖", emoji: "🍭", price: 0.50 },
-            apple: { name: "苹果", emoji: "🍎", price: 1.00 },
-            donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.50 },
-            donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.55 },
-            donut_c: { name: "甜甜圈C", emoji: "🍩", price: 2.75 },
-            chips: { name: "薯片", emoji: "🍟", price: 1.20 },
-            orange: { name: "橙子", emoji: "🍊", price: 3.00 },
-            milk: { name: "牛奶", emoji: "🥛", price: 1.50 },
-            meat: { name: "肉", emoji: "🥩", price: 15.00 },
-            fish: { name: "鱼", emoji: "🐟", price: 15.00 },
-            chicken: { name: "鸡腿", emoji: "🍗", price: 15.00 }
-        };
+        let PRODUCTS = {};
+        let SHELF_CONFIG = [];
+        let cashRegister = {};
 
         /**
-         * 货架区域配置（核心配置，易于修改）
+         * 从外部JSON文件加载配置
          */
-        const SHELF_CONFIG = [
+        async function loadConfig() {
+            try {
+                const response = await fetch('game-config.json');
+                if (!response.ok) throw new Error('Config file not found');
+
+                const config = await response.json();
+                console.log('✅ 外部配置文件加载成功 (game-config.json)');
+
+                PRODUCTS = config.products;
+                SHELF_CONFIG = config.shelves;
+                cashRegister = config.cashRegister;
+
+                return true;
+            } catch (error) {
+                console.warn('⚠️ 无法加载外部配置文件，使用内嵌默认配置');
+                console.error('错误详情:', error);
+                loadDefaultConfig();
+                return false;
+            }
+        }
+
+        /**
+         * 加载内嵌的默认配置（备用方案）
+         */
+        function loadDefaultConfig() {
+            console.log('📦 使用内嵌默认配置');
+
+            PRODUCTS = {
+                lollipop: { name: "棒棒糖", emoji: "🍭", price: 0.50 },
+                apple: { name: "苹果", emoji: "🍎", price: 1.00 },
+                donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.50 },
+                donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.55 },
+                donut_c: { name: "甜甜圈C", emoji: "🍩", price: 2.75 },
+                chips: { name: "薯片", emoji: "🍟", price: 1.20 },
+                orange: { name: "橙子", emoji: "🍊", price: 3.00 },
+                milk: { name: "牛奶", emoji: "🥛", price: 1.50 },
+                meat: { name: "肉", emoji: "🥩", price: 15.00 },
+                fish: { name: "鱼", emoji: "🐟", price: 15.00 },
+                chicken: { name: "鸡腿", emoji: "🍗", price: 15.00 }
+            };
+
+            SHELF_CONFIG = [
             // 甜甜圈塔 - 拆分为3个独立区域（从上到下）
             {
                 id: 'donut-top',
@@ -956,13 +987,11 @@
             }
         ];
 
-        /**
-         * 钱币系统（新加坡货币）
-         */
-        let cashRegister = {
-            '0.05': 10,  '0.10': 10,  '0.20': 10,  '0.50': 10,
-            '1': 20,     '2': 10,     '5': 10,     '10': 10,  '50': 5
-        };
+            cashRegister = {
+                '0.05': 10,  '0.10': 10,  '0.20': 10,  '0.50': 10,
+                '1': 20,     '2': 10,     '5': 10,     '10': 10,  '50': 5
+            };
+        }
 
         /**
          * 游戏状态管理
@@ -1495,7 +1524,10 @@
         /**
          * ==================== 游戏初始化 ====================
          */
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
+            // 加载配置文件
+            await loadConfig();
+
             // 初始化货架
             initShelfAreas();
 

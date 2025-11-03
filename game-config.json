@@ -5,22 +5,22 @@
     "background": "linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%)"
   },
   "products": {
-    "lollipop": { "name": "棒棒糖", "emoji": "🍭", "price": 0.50 },
-    "apple": { "name": "苹果", "emoji": "🍎", "price": 1.00 },
-    "donut_a": { "name": "甜甜圈A", "emoji": "🍩", "price": 2.50 },
-    "donut_b": { "name": "甜甜圈B", "emoji": "🍩", "price": 2.55 },
-    "donut_c": { "name": "甜甜圈C", "emoji": "🍩", "price": 2.75 },
-    "chips": { "name": "薯片", "emoji": "🍟", "price": 1.20 },
-    "orange": { "name": "橙子", "emoji": "🍊", "price": 3.00 },
-    "milk": { "name": "牛奶", "emoji": "🥛", "price": 1.50 },
-    "meat": { "name": "肉", "emoji": "🥩", "price": 15.00 },
-    "fish": { "name": "鱼", "emoji": "🐟", "price": 15.00 },
-    "chicken": { "name": "鸡腿", "emoji": "🍗", "price": 15.00 }
+    "lollipop": { "name": "Lollipop", "emoji": "🍭", "price": 0.50 },
+    "apple": { "name": "Apple", "emoji": "🍎", "price": 1.00 },
+    "donut_a": { "name": "Donut A", "emoji": "🍩", "price": 2.50 },
+    "donut_b": { "name": "Donut B", "emoji": "🍩", "price": 2.55 },
+    "donut_c": { "name": "Donut C", "emoji": "🍩", "price": 2.75 },
+    "chips": { "name": "Chips", "emoji": "🍟", "price": 1.20 },
+    "orange": { "name": "Orange", "emoji": "🍊", "price": 3.00 },
+    "milk": { "name": "Milk", "emoji": "🥛", "price": 1.50 },
+    "meat": { "name": "Beef", "emoji": "🥩", "price": 15.00 },
+    "fish": { "name": "Fish", "emoji": "🐟", "price": 15.00 },
+    "chicken": { "name": "Chicken Leg", "emoji": "🍗", "price": 15.00 }
   },
   "shelves": [
     {
       "id": "donut-top",
-      "name": "甜甜圈C区",
+      "name": "Donut C Shelf",
       "type": "donut-shelf",
       "position": { "left": "0", "top": "8vh" },
       "size": { "width": "120px", "height": "20vh" },
@@ -35,7 +35,7 @@
     },
     {
       "id": "donut-middle",
-      "name": "甜甜圈B区",
+      "name": "Donut B Shelf",
       "type": "donut-shelf",
       "position": { "left": "0", "top": "28vh" },
       "size": { "width": "120px", "height": "20vh" },
@@ -50,7 +50,7 @@
     },
     {
       "id": "donut-bottom",
-      "name": "甜甜圈A区",
+      "name": "Donut A Shelf",
       "type": "donut-shelf",
       "position": { "left": "0", "top": "48vh" },
       "size": { "width": "120px", "height": "22vh" },
@@ -65,7 +65,7 @@
     },
     {
       "id": "snack-corner",
-      "name": "零食角",
+      "name": "Snack Corner",
       "type": "grid",
       "position": { "left": "0", "bottom": "0" },
       "size": { "width": "200px", "height": "28vh" },
@@ -86,7 +86,7 @@
     },
     {
       "id": "fruit-stand",
-      "name": "水果展示台",
+      "name": "Fruit Stand",
       "type": "shelves",
       "position": { "left": "250px", "top": "20vh" },
       "size": { "width": "180px", "height": "35vh" },
@@ -109,7 +109,7 @@
     },
     {
       "id": "seafood-freezer",
-      "name": "海鲜冰柜",
+      "name": "Seafood Freezer",
       "type": "freezer",
       "position": { "right": "20px", "top": "15vh" },
       "size": { "width": "220px", "height": "22vh" },
@@ -126,7 +126,7 @@
     },
     {
       "id": "meat-freezer",
-      "name": "肉类冰柜",
+      "name": "Meat Freezer",
       "type": "freezer",
       "position": { "right": "20px", "top": "42vh" },
       "size": { "width": "220px", "height": "30vh" },

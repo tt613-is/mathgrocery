@@ -1433,9 +1433,15 @@
 
             // 更新顾客区域UI
             const order = gameState.currentCustomer.order;
-            const orderText = order.map(item =>
-                `${PRODUCTS[item.productId].emoji} x${item.quantity}`
-            ).join('  ');
+            const orderText = order.map(item => {
+                const product = PRODUCTS[item.productId];
+                // 对于甜甜圈，显示名称（包含A/B/C）；对于其他商品，只显示表情符号
+                if (item.productId.startsWith('donut_')) {
+                    return `${product.name} ${product.emoji} x${item.quantity}`;
+                } else {
+                    return `${product.emoji} x${item.quantity}`;
+                }
+            }).join('  ');
 
             document.getElementById('dialogText').textContent = 'I want to buy:';
             document.getElementById('customerOrder').textContent = orderText;

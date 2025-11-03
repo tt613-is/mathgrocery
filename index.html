@@ -402,18 +402,30 @@
             background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
         }
 
-        /* 不规则散列布局（参考手绘图） */
-        .btn-0-1 { left: 50px; top: 20px; }
-        .btn-2 { left: 180px; top: 30px; }
-        .btn-3 { left: 290px; top: 25px; }
-        .btn-4 { left: 420px; top: 30px; }
-        .btn-5 { left: 120px; top: 120px; }
-        .btn-6 { left: 260px; top: 130px; }
-        .btn-7 { left: 380px; top: 125px; }
-        .btn-8 { left: 160px; top: 230px; }
-        .btn-9 { left: 320px; top: 240px; }
-        .btn-0-2 { left: 230px; top: 340px; }
-        .btn-clear { left: 360px; top: 350px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); }
+        /* 倒三角形按钮布局 */
+        /* 第1排：1 2 3 4 (横坐标对齐，等间距) */
+        .btn-1 { left: 90px; top: 30px; }
+        .btn-2 { left: 190px; top: 30px; }
+        .btn-3 { left: 290px; top: 30px; }
+        .btn-4 { left: 390px; top: 30px; }
+
+        /* 第2排：5 6 7 (居中对齐，等间距) */
+        .btn-5 { left: 140px; top: 130px; }
+        .btn-6 { left: 240px; top: 130px; }
+        .btn-7 { left: 340px; top: 130px; }
+
+        /* 第3排：8 9 (居中对齐，等间距) */
+        .btn-8 { left: 190px; top: 230px; }
+        .btn-9 { left: 290px; top: 230px; }
+
+        /* 第4排：0 和 Backspace (居中对齐) */
+        .btn-0 { left: 190px; top: 330px; }
+        .btn-backspace {
+            left: 290px;
+            top: 330px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            font-size: 36px;
+        }
 
         .calc-button:hover {
             transform: scale(1.1);
@@ -700,19 +712,26 @@
                     <div class="calculator-question" id="calculatorQuestion">0</div>
                 </div>
 
-                <!-- 数字按钮（散列布局） -->
+                <!-- 数字按钮（倒三角形布局） -->
                 <div class="calculator-buttons">
-                    <button class="calc-button btn-0-1" onclick="inputNumber(0)">0</button>
+                    <!-- 第1排：1 2 3 4 -->
+                    <button class="calc-button btn-1" onclick="inputNumber(1)">1</button>
                     <button class="calc-button btn-2" onclick="inputNumber(2)">2</button>
                     <button class="calc-button btn-3" onclick="inputNumber(3)">3</button>
                     <button class="calc-button btn-4" onclick="inputNumber(4)">4</button>
+
+                    <!-- 第2排：5 6 7 -->
                     <button class="calc-button btn-5" onclick="inputNumber(5)">5</button>
                     <button class="calc-button btn-6" onclick="inputNumber(6)">6</button>
                     <button class="calc-button btn-7" onclick="inputNumber(7)">7</button>
+
+                    <!-- 第3排：8 9 -->
                     <button class="calc-button btn-8" onclick="inputNumber(8)">8</button>
                     <button class="calc-button btn-9" onclick="inputNumber(9)">9</button>
-                    <button class="calc-button btn-0-2" onclick="inputNumber(0)">0</button>
-                    <button class="calc-button btn-clear" onclick="clearCalculator()">X</button>
+
+                    <!-- 第4排：0 和 Backspace -->
+                    <button class="calc-button btn-0" onclick="inputNumber(0)">0</button>
+                    <button class="calc-button btn-backspace" onclick="backspace()">🔙</button>
                 </div>
 
                 <!-- 操作按钮 -->
@@ -1031,6 +1050,16 @@
                 waitingForOperand: false
             };
             updateDisplay();
+        }
+
+        /**
+         * 退格删除最后一个字符
+         */
+        function backspace() {
+            if (calculatorState.display.length > 0) {
+                calculatorState.display = calculatorState.display.slice(0, -1);
+                updateDisplay();
+            }
         }
 
         /**

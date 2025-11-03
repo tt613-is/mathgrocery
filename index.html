@@ -364,7 +364,7 @@
         .cashier-area {
             position: absolute;
             left: 50%;
-            top: 10%;
+            top: 5%;
             transform: translateX(-50%);
             width: 600px;
             max-width: 90%;
@@ -832,6 +832,8 @@
         let SHELF_CONFIG = [];
         let cashRegister = {};
         let customerAreaConfig = {};
+        let calculatorConfig = {};
+        let DISCOUNT_RULES = []; // 折扣规则数组
 
         /**
          * 应用顾客区域样式配置
@@ -859,6 +861,76 @@
         }
 
         /**
+         * 应用计算器样式配置
+         */
+        function applyCalculatorStyles(config) {
+            if (!config) return;
+
+            const cashierArea = document.querySelector('.cashier-area');
+            const display = document.querySelector('.calculator-display');
+            const submitButton = document.querySelector('.btn-submit-top');
+            const operators = document.querySelector('.calculator-operators');
+
+            // 应用计算器整体样式
+            if (config.position) {
+                if (config.position.left) cashierArea.style.left = config.position.left;
+                if (config.position.top) cashierArea.style.top = config.position.top;
+            }
+            if (config.size) {
+                if (config.size.width) cashierArea.style.width = config.size.width;
+                if (config.size.maxWidth) cashierArea.style.maxWidth = config.size.maxWidth;
+            }
+            if (config.padding) cashierArea.style.padding = config.padding;
+
+            // 应用显示屏样式
+            if (config.display && display) {
+                if (config.display.height) display.style.minHeight = config.display.height;
+                if (config.display.padding) display.style.padding = config.display.padding;
+            }
+
+            // 应用送出按钮样式
+            if (config.submitButton && submitButton) {
+                if (config.submitButton.width) submitButton.style.width = config.submitButton.width;
+                if (config.submitButton.height) submitButton.style.height = config.submitButton.height;
+                if (config.submitButton.fontSize) submitButton.style.fontSize = config.submitButton.fontSize;
+            }
+
+            // 应用数字按钮样式
+            if (config.numberButtons) {
+                const numberButtons = document.querySelectorAll('.calc-button');
+                numberButtons.forEach(button => {
+                    if (config.numberButtons.width) button.style.width = config.numberButtons.width;
+                    if (config.numberButtons.height) button.style.height = config.numberButtons.height;
+                    if (config.numberButtons.fontSize) button.style.fontSize = config.numberButtons.fontSize;
+                });
+
+                // 应用按钮位置
+                if (config.numberButtons.positions) {
+                    Object.keys(config.numberButtons.positions).forEach(key => {
+                        const pos = config.numberButtons.positions[key];
+                        const btnClass = key === 'backspace' ? '.btn-backspace' : `.btn-${key}`;
+                        const btn = document.querySelector(btnClass);
+                        if (btn && pos) {
+                            if (pos.left) btn.style.left = pos.left;
+                            if (pos.top) btn.style.top = pos.top;
+                        }
+                    });
+                }
+            }
+
+            // 应用操作符按钮样式
+            if (config.operatorButtons && operators) {
+                if (config.operatorButtons.gap) operators.style.gap = config.operatorButtons.gap;
+                const opButtons = operators.querySelectorAll('.calc-op-button');
+                opButtons.forEach(button => {
+                    if (config.operatorButtons.width) button.style.width = config.operatorButtons.width;
+                    if (config.operatorButtons.height) button.style.height = config.operatorButtons.height;
+                    if (config.operatorButtons.fontSize) button.style.fontSize = config.operatorButtons.fontSize;
+                });
+            }
+        }
+
+        /**
          * 从外部JSON文件加载配置
          */
         async function loadConfig() {
@@ -873,9 +945,21 @@
                 SHELF_CONFIG = config.shelves;
                 cashRegister = config.cashRegister;
                 customerAreaConfig = config.customerArea || {};
+                calculatorConfig = config.calculator || {};
+
+                // 收集所有货架的折扣规则
+                DISCOUNT_RULES = [];
+                config.shelves.forEach(shelf => {
+                    if (shelf.discountRules) {
+                        DISCOUNT_RULES.push(...shelf.discountRules);
+                    }
+                });
 
                 // 应用顾客区域样式
                 applyCustomerAreaStyles(customerAreaConfig);
+
+                // 应用计算器样式
+                applyCalculatorStyles(calculatorConfig);
 
                 return true;
             } catch (error) {
@@ -908,6 +992,51 @@
                 }
             };
 
+            calculatorConfig = {
+                position: {
+                    left: "50%",
+                    top: "5%"
+                },
+                size: {
+                    width: "600px",
+                    maxWidth: "90%"
+                },
+                padding: "30px",
+                display: {
+                    height: "90px",
+                    padding: "25px 20px"
+                },
+                submitButton: {
+                    width: "90px",
+                    height: "90px",
+                    fontSize: "48px"
+                },
+                numberButtons: {
+                    width: "70px",
+                    height: "70px",
+                    fontSize: "32px",
+                    positions: {
+                        "1": { left: "90px", top: "30px" },
+                        "2": { left: "190px", top: "30px" },
+                        "3": { left: "290px", top: "30px" },
+                        "4": { left: "390px", top: "30px" },
+                        "5": { left: "140px", top: "130px" },
+                        "6": { left: "240px", top: "130px" },
+                        "7": { left: "340px", top: "130px" },
+                        "8": { left: "190px", top: "230px" },
+                        "9": { left: "290px", top: "230px" },
+                        "0": { left: "240px", top: "330px" },
+                        "backspace": { left: "340px", top: "330px" }
+                    }
+                },
+                operatorButtons: {
+                    width: "80px",
+                    height: "60px",
+                    fontSize: "28px",
+                    gap: "15px"
+                }
+            };
+
             PRODUCTS = {
                 lollipop: { name: "Lollipop", emoji: "🍭", price: 0.50 },
                 apple: { name: "Apple", emoji: "🍎", price: 1.00 },
@@ -923,50 +1052,32 @@
             };
 
             SHELF_CONFIG = [
-            // Donut Tower - Split into 3 independent areas (from top to bottom)
+            // Donut Shelf - 3x3 Grid (C/B/A rows, 3 per row)
             {
-                id: 'donut-top',
-                name: 'Donut C Shelf',
-                type: 'donut-shelf',
-                position: { left: '0', top: '8vh' },
-                size: { width: '120px', height: '20vh' },
-                layout: 'vertical',
-                products: ['donut_c', 'donut_c', 'donut_c'],
-                style: 'shelf-area-tower',
+                id: 'donut-shelf',
+                name: 'Donut Shelf',
+                type: 'grid',
+                position: { left: '0', top: '5vh' },
+                size: { width: '220px', height: '35vh' },
+                layout: 'grid',
+                gridConfig: { rows: 3, cols: 3 },
+                products: [
+                    'donut_c', 'donut_c', 'donut_c',
+                    'donut_b', 'donut_b', 'donut_b',
+                    'donut_a', 'donut_a', 'donut_a'
+                ],
+                style: 'shelf-area-grid',
+                showProductName: true,
                 priceLabel: {
                     show: true,
-                    position: 'right',
-                    price: '$2.75'
-                }
-            },
-            {
-                id: 'donut-middle',
-                name: 'Donut B Shelf',
-                type: 'donut-shelf',
-                position: { left: '0', top: '28vh' },
-                size: { width: '120px', height: '20vh' },
-                layout: 'vertical',
-                products: ['donut_b', 'donut_b', 'donut_b'],
-                style: 'shelf-area-tower',
-                priceLabel: {
-                    show: true,
-                    position: 'right',
-                    price: '$2.55'
-                }
-            },
-            {
-                id: 'donut-bottom',
-                name: 'Donut A Shelf',
-                type: 'donut-shelf',
-                position: { left: '0', top: '48vh' },
-                size: { width: '120px', height: '22vh' },
-                layout: 'vertical',
-                products: ['donut_a', 'donut_a', 'donut_a'],
-                style: 'shelf-area-tower',
-                priceLabel: {
-                    show: true,
-                    position: 'right',
-                    price: '$2.50'
+                    productName: 'Donuts',
+                    items: [
+                        { name: 'Donut C', price: '$2.75' },
+                        { name: 'Donut B', price: '$2.55' },
+                        { name: 'Donut A', price: '$2.50' }
+                    ],
+                    unit: 'each',
+                    discount: null
                 }
             },
             {
@@ -979,6 +1090,10 @@
                 gridConfig: { rows: 2, cols: 3 },
                 products: ['lollipop', 'lollipop', 'lollipop', 'chips', 'chips', 'chips'],
                 style: 'shelf-area-grid',
+                showProductName: false,
+                discountRules: [
+                    { productId: 'lollipop', quantity: 2, price: 0.70 }
+                ],
                 priceLabel: {
                     show: true,
                     productName: 'Snacks',
@@ -987,7 +1102,7 @@
                         { name: 'Chips', price: '$1.20' }
                     ],
                     unit: 'each',
-                    discount: '2 Lollipops for $0.90'
+                    discount: '2 Lollipops for $0.70'
                 }
             },
             {
@@ -1003,6 +1118,7 @@
                     { row: 'bottom', items: [] }
                 ],
                 style: 'shelf-area-shelves',
+                showProductName: false,
                 priceLabel: {
                     show: true,
                     productName: 'Fresh Produce',
@@ -1022,6 +1138,7 @@
                 layout: 'scattered',
                 products: ['fish', 'fish', 'fish'],
                 style: 'shelf-area-freezer',
+                showProductName: false,
                 priceLabel: {
                     show: true,
                     productName: 'Fish',
@@ -1039,6 +1156,7 @@
                 layout: 'mixed',
                 products: ['meat', 'chicken', 'chicken', 'chicken', 'chicken'],
                 style: 'shelf-area-freezer',
+                showProductName: false,
                 priceLabel: {
                     show: true,
                     productName: 'Meat',
@@ -1057,8 +1175,19 @@
                 '1': 20,     '2': 10,     '5': 10,     '10': 10,  '50': 5
             };
 
+            // 收集所有货架的折扣规则
+            DISCOUNT_RULES = [];
+            SHELF_CONFIG.forEach(shelf => {
+                if (shelf.discountRules) {
+                    DISCOUNT_RULES.push(...shelf.discountRules);
+                }
+            });
+
             // 应用顾客区域样式
             applyCustomerAreaStyles(customerAreaConfig);
+
+            // 应用计算器样式
+            applyCalculatorStyles(calculatorConfig);
         }
 
         /**
@@ -1296,7 +1425,7 @@
             }
 
             // 根据布局类型渲染商品
-            renderProducts(div, config.products, config.layout, config.gridConfig);
+            renderProducts(div, config.products, config.layout, config.gridConfig, config.showProductName);
 
             return div;
         }
@@ -1304,7 +1433,7 @@
         /**
          * 根据布局类型渲染商品
          */
-        function renderProducts(container, products, layout, gridConfig) {
+        function renderProducts(container, products, layout, gridConfig, showProductName = false) {
             if (layout === 'grid' && gridConfig) {
                 container.style.gridTemplateRows = `repeat(${gridConfig.rows}, 1fr)`;
                 container.style.gridTemplateColumns = `repeat(${gridConfig.cols}, 1fr)`;
@@ -1316,14 +1445,14 @@
                     const rowDiv = document.createElement('div');
                     rowDiv.className = 'shelf-row';
                     rowData.items.forEach(productId => {
-                        rowDiv.appendChild(createProductItem(productId));
+                        rowDiv.appendChild(createProductItem(productId, showProductName));
                     });
                     container.appendChild(rowDiv);
                 });
             } else {
                 // 其他布局（vertical, grid, scattered, mixed）
                 products.forEach(productId => {
-                    container.appendChild(createProductItem(productId));
+                    container.appendChild(createProductItem(productId, showProductName));
                 });
             }
         }
@@ -1331,7 +1460,7 @@
         /**
          * 创建商品元素（每个实例有唯一ID）
          */
-        function createProductItem(productId) {
+        function createProductItem(productId, showProductName = false) {
             const product = PRODUCTS[productId];
             const itemId = `item_${gameState.itemIdCounter++}`;
             const div = document.createElement('div');
@@ -1339,16 +1468,58 @@
             div.dataset.productId = productId;
             div.dataset.itemId = itemId;
             div.onclick = () => pickItem(itemId, productId);
-            div.innerHTML = `
-                <div class="product-emoji">${product.emoji}</div>
-                <div class="product-name">${product.name}</div>
-            `;
+
+            // 根据 showProductName 配置决定是否显示商品名称
+            if (showProductName) {
+                div.innerHTML = `
+                    <div class="product-emoji">${product.emoji}</div>
+                    <div class="product-name">${product.name}</div>
+                `;
+            } else {
+                div.innerHTML = `
+                    <div class="product-emoji">${product.emoji}</div>
+                `;
+            }
+
             return div;
         }
 
         /**
          * ==================== 游戏流程 ====================
          */
+
+        /**
+         * 计算订单总价（应用折扣规则）
+         */
+        function calculateOrderTotal(order) {
+            let totalPrice = 0;
+
+            order.forEach(item => {
+                const productId = item.productId;
+                const quantity = item.quantity;
+                const unitPrice = PRODUCTS[productId].price;
+
+                // 查找适用的折扣规则
+                const discountRule = DISCOUNT_RULES.find(
+                    rule => rule.productId === productId && rule.quantity <= quantity
+                );
+
+                if (discountRule) {
+                    // 有折扣：计算有多少套折扣商品
+                    const discountSets = Math.floor(quantity / discountRule.quantity);
+                    const remainder = quantity % discountRule.quantity;
+
+                    // 折扣价格 × 套数 + 单价 × 剩余数量
+                    totalPrice += discountRule.price * discountSets;
+                    totalPrice += unitPrice * remainder;
+                } else {
+                    // 无折扣：直接按单价计算
+                    totalPrice += unitPrice * quantity;
+                }
+            });
+
+            return parseFloat(totalPrice.toFixed(2));
+        }
 
         /**
          * 生成随机顾客订单
@@ -1389,12 +1560,8 @@
                 order.push({ productId, quantity });
             }
 
-            // 计算总价
-            let totalPrice = 0;
-            order.forEach(item => {
-                totalPrice += PRODUCTS[item.productId].price * item.quantity;
-            });
-            totalPrice = parseFloat(totalPrice.toFixed(2));
+            // 计算总价（应用折扣）
+            const totalPrice = calculateOrderTotal(order);
 
             // 生成支付金额（总价 + 随机 2-10 美元，确保需要找零）
             const extra = 2 + Math.floor(Math.random() * 9);
@@ -1552,7 +1719,7 @@
             document.getElementById('dialogText').textContent = 'Great! Here\'s the money:';
             document.getElementById('customerOrder').textContent = '';
             document.getElementById('paymentInfo').classList.remove('hidden');
-            document.getElementById('paymentAmount').textContent = `Customer gave $${customer.paid.toFixed(2)} | Total: $${customer.totalPrice.toFixed(2)}`;
+            document.getElementById('paymentAmount').textContent = `Customer gave $${customer.paid.toFixed(2)}`;
 
             // 显示收银台
             document.getElementById('cashierArea').classList.remove('hidden');

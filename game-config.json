@@ -15,6 +15,50 @@
       "marginLeft": "30px"
     }
   },
+  "calculator": {
+    "position": {
+      "left": "50%",
+      "top": "-15%"
+    },
+    "size": {
+      "width": "600px",
+      "maxWidth": "90%"
+    },
+    "padding": "30px",
+    "display": {
+      "height": "90px",
+      "padding": "25px 20px"
+    },
+    "submitButton": {
+      "width": "90px",
+      "height": "90px",
+      "fontSize": "48px"
+    },
+    "numberButtons": {
+      "width": "70px",
+      "height": "70px",
+      "fontSize": "32px",
+      "positions": {
+        "1": { "left": "90px", "top": "30px" },
+        "2": { "left": "190px", "top": "30px" },
+        "3": { "left": "290px", "top": "30px" },
+        "4": { "left": "390px", "top": "30px" },
+        "5": { "left": "140px", "top": "130px" },
+        "6": { "left": "240px", "top": "130px" },
+        "7": { "left": "340px", "top": "130px" },
+        "8": { "left": "190px", "top": "230px" },
+        "9": { "left": "290px", "top": "230px" },
+        "0": { "left": "240px", "top": "330px" },
+        "backspace": { "left": "340px", "top": "330px" }
+      }
+    },
+    "operatorButtons": {
+      "width": "80px",
+      "height": "60px",
+      "fontSize": "28px",
+      "gap": "15px"
+    }
+  },
   "products": {
     "lollipop": { "name": "Lollipop", "emoji": "🍭", "price": 0.50 },
     "apple": { "name": "Apple", "emoji": "🍎", "price": 1.00 },
@@ -30,48 +74,30 @@
   },
   "shelves": [
     {
-      "id": "donut-top",
-      "name": "Donut C Shelf",
-      "type": "donut-shelf",
-      "position": { "left": "0", "top": "8vh" },
-      "size": { "width": "120px", "height": "20vh" },
-      "layout": "vertical",
-      "products": ["donut_c", "donut_c", "donut_c"],
-      "style": "shelf-area-tower",
+      "id": "donut-shelf",
+      "name": "Donut Shelf",
+      "type": "grid",
+      "position": { "left": "0", "top": "5vh" },
+      "size": { "width": "220px", "height": "35vh" },
+      "layout": "grid",
+      "gridConfig": { "rows": 3, "cols": 3 },
+      "products": [
+        "donut_c", "donut_c", "donut_c",
+        "donut_b", "donut_b", "donut_b",
+        "donut_a", "donut_a", "donut_a"
+      ],
+      "style": "shelf-area-grid",
+      "showProductName": true,
       "priceLabel": {
         "show": true,
-        "position": "right",
-        "price": "$2.75"
-      }
-    },
-    {
-      "id": "donut-middle",
-      "name": "Donut B Shelf",
-      "type": "donut-shelf",
-      "position": { "left": "0", "top": "28vh" },
-      "size": { "width": "120px", "height": "20vh" },
-      "layout": "vertical",
-      "products": ["donut_b", "donut_b", "donut_b"],
-      "style": "shelf-area-tower",
-      "priceLabel": {
-        "show": true,
-        "position": "right",
-        "price": "$2.55"
-      }
-    },
-    {
-      "id": "donut-bottom",
-      "name": "Donut A Shelf",
-      "type": "donut-shelf",
-      "position": { "left": "0", "top": "48vh" },
-      "size": { "width": "120px", "height": "22vh" },
-      "layout": "vertical",
-      "products": ["donut_a", "donut_a", "donut_a"],
-      "style": "shelf-area-tower",
-      "priceLabel": {
-        "show": true,
-        "position": "right",
-        "price": "$2.50"
+        "productName": "Donuts",
+        "items": [
+          { "name": "Donut C", "price": "$2.75" },
+          { "name": "Donut B", "price": "$2.55" },
+          { "name": "Donut A", "price": "$2.50" }
+        ],
+        "unit": "each",
+        "discount": null
       }
     },
     {
@@ -84,6 +110,14 @@
       "gridConfig": { "rows": 2, "cols": 3 },
       "products": ["lollipop", "lollipop", "lollipop", "chips", "chips", "chips"],
       "style": "shelf-area-grid",
+      "showProductName": false,
+      "discountRules": [
+        {
+          "productId": "lollipop",
+          "quantity": 2,
+          "price": 0.70
+        }
+      ],
       "priceLabel": {
         "show": true,
         "productName": "Snacks",
@@ -92,7 +126,7 @@
           { "name": "Chips", "price": "$1.20" }
         ],
         "unit": "each",
-        "discount": "2 Lollipops for $0.90"
+        "discount": "2 Lollipops for $0.70"
       }
     },
     {
@@ -108,6 +142,7 @@
         { "row": "bottom", "items": [] }
       ],
       "style": "shelf-area-shelves",
+      "showProductName": false,
       "priceLabel": {
         "show": true,
         "productName": "Fresh Produce",
@@ -127,6 +162,7 @@
       "layout": "scattered",
       "products": ["fish", "fish", "fish"],
       "style": "shelf-area-freezer",
+      "showProductName": false,
       "priceLabel": {
         "show": true,
         "productName": "Fish",
@@ -144,6 +180,7 @@
       "layout": "mixed",
       "products": ["meat", "chicken", "chicken", "chicken", "chicken"],
       "style": "shelf-area-freezer",
+      "showProductName": false,
       "priceLabel": {
         "show": true,
         "productName": "Meat",

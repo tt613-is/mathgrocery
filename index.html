@@ -47,6 +47,7 @@
             margin-bottom: 0;
             animation: customerEnter 0.5s ease-out;
             position: relative;
+            display: inline-block;
         }
 
         @keyframes customerEnter {
@@ -62,15 +63,18 @@
 
         .customer-dialog {
             position: absolute;
-            left: calc(100% + 15px);
-            top: 0;
-            max-width: 300px;
+            left: 100%;
+            top: -20px;
+            margin-left: 20px;
+            min-width: 250px;
+            max-width: 400px;
             background: white;
-            border-radius: 12px;
-            padding: 12px 18px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            border-radius: 15px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             text-align: left;
             animation: dialogBounce 0.5s ease-out 0.2s both;
+            z-index: 10;
         }
 
         @keyframes dialogBounce {
@@ -90,25 +94,27 @@
         .customer-dialog::before {
             content: '';
             position: absolute;
-            left: -15px;
-            top: 20px;
+            left: -10px;
+            top: 30px;
             width: 0;
             height: 0;
             border-top: 10px solid transparent;
             border-bottom: 10px solid transparent;
-            border-right: 15px solid white;
+            border-right: 10px solid white;
         }
 
         .dialog-text {
             font-size: 14px;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
         }
 
         .customer-order {
-            font-size: 18px;
+            font-size: 24px;
             font-weight: bold;
-            color: #1976d2;
+            color: #333;
+            letter-spacing: 4px;
         }
 
         .customer-bag {
@@ -720,13 +726,14 @@
     <div class="game-container">
         <!-- ==================== 顾客区域 ==================== -->
         <div class="customer-area">
-            <div class="customer-avatar" id="customerAvatar">👤</div>
-
-            <div class="customer-dialog">
-                <div class="dialog-text" id="dialogText">Welcome to Math Grocery!</div>
-                <div class="customer-order" id="customerOrder"></div>
-                <div class="payment-info hidden" id="paymentInfo">
-                    <span class="payment-amount" id="paymentAmount"></span>
+            <div class="customer-avatar" id="customerAvatar">
+                👤
+                <div class="customer-dialog">
+                    <div class="dialog-text" id="dialogText">Welcome to Math Grocery!</div>
+                    <div class="customer-order" id="customerOrder"></div>
+                    <div class="payment-info hidden" id="paymentInfo">
+                        <span class="payment-amount" id="paymentAmount"></span>
+                    </div>
                 </div>
             </div>
 
@@ -805,9 +812,9 @@
         const PRODUCTS = {
             lollipop: { name: "棒棒糖", emoji: "🍭", price: 0.50 },
             apple: { name: "苹果", emoji: "🍎", price: 1.00 },
-            donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.00 },
-            donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.50 },
-            donut_c: { name: "甜甜圈C", emoji: "🍩", price: 3.00 },
+            donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.50 },
+            donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.55 },
+            donut_c: { name: "甜甜圈C", emoji: "🍩", price: 2.75 },
             chips: { name: "薯片", emoji: "🍟", price: 1.20 },
             orange: { name: "橙子", emoji: "🍊", price: 3.00 },
             milk: { name: "牛奶", emoji: "🥛", price: 1.50 },
@@ -820,20 +827,50 @@
          * 货架区域配置（核心配置，易于修改）
          */
         const SHELF_CONFIG = [
+            // 甜甜圈塔 - 拆分为3个独立区域（从上到下）
             {
-                id: 'donut-tower',
-                name: '甜甜圈塔',
-                type: 'tower',
-                position: { left: '0', top: '8vh' },  // 从顾客区域延伸下来
-                size: { width: '120px', height: '62vh' },
+                id: 'donut-top',
+                name: '甜甜圈C区',
+                type: 'donut-shelf',
+                position: { left: '0', top: '8vh' },
+                size: { width: '120px', height: '20vh' },
                 layout: 'vertical',
-                products: ['donut_c', 'donut_b', 'donut_a'],
+                products: ['donut_c', 'donut_c', 'donut_c'],
                 style: 'shelf-area-tower',
                 priceLabel: {
-                    productName: 'Donuts',
-                    prices: ['$2.00', '$2.50', '$3.00'],
-                    unit: 'each',
-                    discount: null
+                    show: true,
+                    position: 'right',
+                    price: '$2.75'
+                }
+            },
+            {
+                id: 'donut-middle',
+                name: '甜甜圈B区',
+                type: 'donut-shelf',
+                position: { left: '0', top: '28vh' },
+                size: { width: '120px', height: '20vh' },
+                layout: 'vertical',
+                products: ['donut_b', 'donut_b', 'donut_b'],
+                style: 'shelf-area-tower',
+                priceLabel: {
+                    show: true,
+                    position: 'right',
+                    price: '$2.55'
+                }
+            },
+            {
+                id: 'donut-bottom',
+                name: '甜甜圈A区',
+                type: 'donut-shelf',
+                position: { left: '0', top: '48vh' },
+                size: { width: '120px', height: '22vh' },
+                layout: 'vertical',
+                products: ['donut_a', 'donut_a', 'donut_a'],
+                style: 'shelf-area-tower',
+                priceLabel: {
+                    show: true,
+                    position: 'right',
+                    price: '$2.50'
                 }
             },
             {
@@ -847,6 +884,7 @@
                 products: ['lollipop', 'lollipop', 'lollipop', 'chips', 'chips', 'chips'],
                 style: 'shelf-area-grid',
                 priceLabel: {
+                    show: true,
                     productName: 'Snacks',
                     items: [
                         { name: 'Lollipop', price: '$0.50' },
@@ -870,6 +908,7 @@
                 ],
                 style: 'shelf-area-shelves',
                 priceLabel: {
+                    show: true,
                     productName: 'Fresh Produce',
                     items: [
                         { name: 'Apple', price: '$1.00' }
@@ -888,6 +927,7 @@
                 products: ['fish', 'fish', 'fish'],
                 style: 'shelf-area-freezer',
                 priceLabel: {
+                    show: true,
                     productName: 'Fish',
                     price: '$15.00',
                     unit: 'each',
@@ -904,6 +944,7 @@
                 products: ['meat', 'chicken', 'chicken', 'chicken', 'chicken'],
                 style: 'shelf-area-freezer',
                 priceLabel: {
+                    show: true,
                     productName: 'Meat',
                     items: [
                         { name: 'Beef', price: '$15.00' },
@@ -978,35 +1019,44 @@
             `;
 
             // 添加价格标签（如果有）
-            if (config.priceLabel) {
+            if (config.priceLabel && config.priceLabel.show) {
                 const priceLabel = document.createElement('div');
                 priceLabel.className = 'price-label';
 
-                let labelHTML = `<div class="price-label-header">${config.priceLabel.productName}</div>`;
-                labelHTML += `<div class="price-label-items">`;
+                // 简单价格标签（甜甜圈货架用）
+                if (config.priceLabel.price && !config.priceLabel.productName) {
+                    priceLabel.innerHTML = config.priceLabel.price;
+                    priceLabel.style.fontSize = '16px';
+                    priceLabel.style.fontWeight = 'bold';
+                } else {
+                    // 复杂价格标签（原有格式）
+                    let labelHTML = `<div class="price-label-header">${config.priceLabel.productName || ''}</div>`;
+                    labelHTML += `<div class="price-label-items">`;
 
-                // 处理多种价格显示格式
-                if (config.priceLabel.items) {
-                    // 多商品列表格式
-                    config.priceLabel.items.forEach(item => {
-                        labelHTML += `<div class="price-label-item"><span>${item.name}</span><span>${item.price}</span></div>`;
-                    });
-                } else if (config.priceLabel.prices) {
-                    // 多价格数组格式（如甜甜圈）
-                    labelHTML += config.priceLabel.prices.join(', ') + ' ' + config.priceLabel.unit;
-                } else if (config.priceLabel.price) {
-                    // 单一价格格式
-                    labelHTML += config.priceLabel.price + ' ' + config.priceLabel.unit;
+                    // 处理多种价格显示格式
+                    if (config.priceLabel.items) {
+                        // 多商品列表格式
+                        config.priceLabel.items.forEach(item => {
+                            labelHTML += `<div class="price-label-item"><span>${item.name}</span><span>${item.price}</span></div>`;
+                        });
+                    } else if (config.priceLabel.prices) {
+                        // 多价格数组格式（如甜甜圈）
+                        labelHTML += config.priceLabel.prices.join(', ') + ' ' + (config.priceLabel.unit || '');
+                    } else if (config.priceLabel.price) {
+                        // 单一价格格式
+                        labelHTML += config.priceLabel.price + ' ' + (config.priceLabel.unit || '');
+                    }
+
+                    labelHTML += `</div>`;
+
+                    // 添加折扣信息
+                    if (config.priceLabel.discount) {
+                        labelHTML += `<div class="price-label-discount">🏷️ ${config.priceLabel.discount}</div>`;
+                    }
+
+                    priceLabel.innerHTML = labelHTML;
                 }
 
-                labelHTML += `</div>`;
-
-                // 添加折扣信息
-                if (config.priceLabel.discount) {
-                    labelHTML += `<div class="price-label-discount">🏷️ ${config.priceLabel.discount}</div>`;
-                }
-
-                priceLabel.innerHTML = labelHTML;
                 div.appendChild(priceLabel);
             }
 

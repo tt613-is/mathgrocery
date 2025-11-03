@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数学杂货店 - Math Grocery</title>
+    <title>数学杂货店 v0.3.0 - Math Grocery</title>
     <style>
         /* ==================== 全局样式 ==================== */
         * {
@@ -16,216 +16,387 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            overflow: hidden;
         }
 
         /* ==================== 游戏容器 ==================== */
         .game-container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        /* ==================== 标题区 ==================== */
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        /* ==================== 货架区域 ==================== */
-        .shelf-section {
-            margin-bottom: 30px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
+            width: 100vw;
+            height: 100vh;
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            background: white;
         }
 
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+        /* ==================== 顾客区域 (上方 25vh) ==================== */
+        .customer-area {
+            height: 25vh;
+            background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+            border-bottom: 3px solid #1976d2;
+            padding: 15px 30px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 10px;
         }
 
-        .product-card {
-            background: #f8f9fa;
-            border: 2px solid #dee2e6;
+        .customer-avatar {
+            font-size: 80px;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
+            margin-bottom: 0;
+        }
+
+        .customer-dialog {
+            position: absolute;
+            right: 80px;
+            top: 20px;
+            max-width: 400px;
+            background: white;
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
         }
 
-        .product-card:hover {
-            border-color: #667eea;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        .customer-dialog::before {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 30px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid white;
         }
 
-        .product-card:active {
-            transform: translateY(0);
-        }
-
-        .product-emoji {
-            font-size: 40px;
+        .dialog-text {
+            font-size: 14px;
+            color: #666;
             margin-bottom: 8px;
         }
 
-        .product-name {
-            font-size: 14px;
-            color: #333;
+        .customer-order {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .customer-bag {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            min-width: 150px;
+            background: #fff3cd;
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px dashed #ffa726;
+        }
+
+        .bag-title {
+            font-size: 12px;
+            color: #666;
             margin-bottom: 5px;
         }
 
-        .product-price {
-            font-size: 16px;
-            color: #667eea;
-            font-weight: bold;
+        .bag-items {
+            font-size: 24px;
+            min-height: 30px;
         }
 
-        /* ==================== 购物车区域 ==================== */
-        .cart-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            min-height: 150px;
-        }
-
-        .cart-empty {
+        .payment-info {
             text-align: center;
-            color: #999;
-            padding: 40px 0;
+            margin-top: 10px;
         }
 
-        .cart-items {
-            list-style: none;
+        .payment-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d32f2f;
         }
 
-        .cart-item {
+        /* ==================== 货架+操作区域 (下方 75vh) ==================== */
+        .main-area {
+            height: 75vh;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #e0e0e0;
+            position: relative;
+            background: #f5f5f5;
         }
 
-        .cart-item:last-child {
+        /* ==================== 货架容器 ==================== */
+        .shelf-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 货架区域基础样式 */
+        .shelf-area {
+            position: absolute;
+            border: 2px solid #999;
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 货架类型：垂直塔式 */
+        .shelf-area-tower {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            background: linear-gradient(180deg, #fff9c4 0%, #fff59d 100%);
+        }
+
+        /* 货架类型：网格 */
+        .shelf-area-grid {
+            display: grid;
+            gap: 8px;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+        }
+
+        /* 货架类型：分层展示 */
+        .shelf-area-shelves {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            background: linear-gradient(180deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        .shelf-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .shelf-row:last-child {
             border-bottom: none;
         }
 
-        .item-info {
+        /* 货架类型：冰柜 */
+        .shelf-area-freezer {
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+            border: 3px solid #0277bd;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 8px;
+            padding: 15px;
         }
 
-        .item-emoji {
-            font-size: 24px;
-        }
-
-        .item-remove {
-            background: #dc3545;
+        .freezer-label {
+            position: absolute;
+            top: -12px;
+            right: 10px;
+            background: #0277bd;
             color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 12px;
+            font-weight: bold;
         }
 
-        .item-remove:hover {
-            background: #c82333;
+        /* 商品卡片 */
+        .product-item {
+            cursor: pointer;
+            text-align: center;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            transition: all 0.2s;
+            user-select: none;
         }
 
-        /* ==================== 总价区域 ==================== */
-        .total-section {
-            background: #fff3cd;
-            border-radius: 12px;
+        .product-item:hover:not(.picked) {
+            transform: scale(1.05);
+            border-color: #667eea;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .product-item:active:not(.picked) {
+            transform: scale(0.98);
+        }
+
+        .product-item.picked {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #ccc;
+        }
+
+        .product-emoji {
+            font-size: 32px;
+            margin-bottom: 4px;
+        }
+
+        .product-name {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .product-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: #d32f2f;
+            margin-top: 2px;
+        }
+
+        /* ==================== 钱箱+操作区域 ==================== */
+        .cashier-area {
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translateX(-50%);
+            width: 500px;
+            max-width: 90vw;
+            background: white;
+            border-radius: 15px;
             padding: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .cashier-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        /* 钱箱 */
+        .cash-register {
+            background: #f5f5f5;
+            border-radius: 10px;
+            padding: 15px;
             margin-bottom: 20px;
+        }
+
+        .cash-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .coin-btn {
+            padding: 10px 5px;
+            background: #fff;
+            border: 2px solid #999;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .coin-btn:hover:not(:disabled) {
+            background: #e3f2fd;
+            border-color: #1976d2;
+            transform: translateY(-2px);
+        }
+
+        .coin-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .coin-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .coin-btn.selected {
+            background: #fff9c4;
+            border: 3px solid #ffc107;
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+        }
+
+        .coin-value {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .coin-stock {
+            font-size: 11px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* 当前订单信息 */
+        .order-info {
+            background: #fff3cd;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
         }
 
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 18px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .info-row:last-child {
             margin-bottom: 0;
+            padding-top: 8px;
+            border-top: 2px solid #ffa726;
+            font-size: 16px;
+            font-weight: bold;
         }
 
         .info-label {
-            font-weight: bold;
-            color: #333;
+            color: #666;
         }
 
         .info-value {
-            color: #d63031;
+            color: #d32f2f;
             font-weight: bold;
-            font-size: 22px;
         }
 
-        /* ==================== 找零区域 ==================== */
-        .change-section {
-            margin-bottom: 20px;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: bold;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .change-input {
-            width: 100%;
-            padding: 15px;
-            font-size: 24px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+        /* 已选金额显示 */
+        .selected-amount {
             text-align: center;
-            transition: border-color 0.3s;
+            font-size: 24px;
+            font-weight: bold;
+            color: #1976d2;
+            margin: 15px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
         }
 
-        .change-input:focus {
-            outline: none;
-            border-color: #667eea;
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
         }
 
-        /* ==================== 按钮样式 ==================== */
         .btn {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
             font-weight: bold;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 10px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .btn-primary {
@@ -235,68 +406,62 @@
 
         .btn-primary:hover:not(:disabled) {
             background: #5568d3;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
         }
 
         .btn-secondary {
-            background: #00b894;
+            background: #ff7675;
             color: white;
         }
 
         .btn-secondary:hover:not(:disabled) {
-            background: #00a383;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+            background: #d63031;
         }
 
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            opacity: 0.6;
+        .btn-success {
+            background: #00b894;
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #00a383;
         }
 
         /* ==================== 反馈区域 ==================== */
-        .feedback {
-            text-align: center;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 12px;
-            font-size: 18px;
+        .feedback-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.7);
             display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
         }
 
-        .feedback.show {
-            display: block;
+        .feedback-overlay.show {
+            display: flex;
         }
 
-        .feedback-correct {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
-        }
-
-        .feedback-wrong {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
+        .feedback-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
         }
 
         .feedback-emoji {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 30px;
+            white-space: pre-line;
         }
 
         /* ==================== 隐藏元素 ==================== */
@@ -305,328 +470,711 @@
         }
 
         /* ==================== 响应式设计 ==================== */
-        @media (max-width: 600px) {
-            .game-container {
-                padding: 20px;
+        @media (max-width: 768px) {
+            .customer-area {
+                padding: 10px 15px;
             }
 
-            h1 {
-                font-size: 24px;
+            .customer-avatar {
+                font-size: 60px;
             }
 
-            .products-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-                gap: 10px;
+            .customer-bag {
+                right: 15px;
+                min-width: 120px;
             }
 
-            .product-card {
-                padding: 10px;
+            .dialog-text {
+                font-size: 14px;
+            }
+
+            .customer-order {
+                font-size: 16px;
+            }
+
+            .cashier-area {
+                width: 95vw;
+                padding: 15px;
+            }
+
+            .cash-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
 
             .product-emoji {
-                font-size: 30px;
+                font-size: 24px;
+            }
+
+            .product-name {
+                font-size: 10px;
+            }
+
+            .product-price {
+                font-size: 12px;
             }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <!-- 游戏标题 -->
-        <h1>🏪 数学杂货店</h1>
-        <p class="subtitle">选择商品，计算找零，当个好老板！</p>
+        <!-- ==================== 顾客区域 ==================== -->
+        <div class="customer-area">
+            <div class="customer-avatar" id="customerAvatar">👤</div>
 
-        <!-- 货架区域 -->
-        <div class="shelf-section" id="shelfSection">
-            <div class="section-title">🛒 点击商品添加到购物车</div>
-            <div class="products-grid" id="productsGrid"></div>
-        </div>
-
-        <!-- 购物车区域 -->
-        <div class="cart-section">
-            <div class="section-title">🛍️ 购物车</div>
-            <div id="cartEmpty" class="cart-empty">
-                点击上方商品添加到购物车
+            <div class="customer-dialog">
+                <div class="dialog-text" id="dialogText">Welcome to Math Grocery!</div>
+                <div class="customer-order" id="customerOrder"></div>
+                <div class="payment-info hidden" id="paymentInfo">
+                    <span class="payment-amount" id="paymentAmount"></span>
+                </div>
             </div>
-            <ul id="cartItems" class="cart-items hidden"></ul>
-        </div>
 
-        <!-- 确认订单按钮 -->
-        <button class="btn btn-success hidden" id="confirmOrderBtn" onclick="confirmOrder()">
-            ✓ 确认订单
-        </button>
-
-        <!-- 总价和支付金额 -->
-        <div class="total-section hidden" id="totalSection">
-            <div class="info-row">
-                <span class="info-label">总价：</span>
-                <span class="info-value" id="totalPrice">$0.00</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">顾客支付：</span>
-                <span class="info-value" id="customerPaid">$0.00</span>
+            <!-- 购物袋放在右上角 -->
+            <div class="customer-bag">
+                <div class="bag-title">Customer's Bag</div>
+                <div class="bag-items" id="bagItems">-</div>
             </div>
         </div>
 
-        <!-- 找零输入区域 -->
-        <div class="change-section hidden" id="changeSection">
-            <label class="input-label" for="changeInput">💰 应找零金额：</label>
-            <input
-                type="number"
-                id="changeInput"
-                class="change-input"
-                placeholder="输入找零金额"
-                min="0"
-                step="0.01"
-            >
+        <!-- ==================== 货架+操作区域 ==================== -->
+        <div class="main-area">
+            <!-- 货架容器（动态生成） -->
+            <div class="shelf-container" id="shelfContainer"></div>
+
+            <!-- 钱箱+操作区域 -->
+            <div class="cashier-area hidden" id="cashierArea">
+                <div class="cashier-title">💰 Cash Register</div>
+
+                <!-- 当前订单信息 -->
+                <div class="order-info" id="orderInfo">
+                    <div class="info-row">
+                        <span class="info-label">Order:</span>
+                        <span class="info-value" id="orderSummary">-</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Total:</span>
+                        <span class="info-value" id="totalPrice">$0.00</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Customer Paid:</span>
+                        <span class="info-value" id="customerPaid">$0.00</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Change Due:</span>
+                        <span class="info-value" id="correctChange">$0.00</span>
+                    </div>
+                </div>
+
+                <!-- 钱箱 -->
+                <div class="cash-register">
+                    <div class="cash-grid" id="cashGrid"></div>
+                </div>
+
+                <!-- 已选金额 -->
+                <div class="selected-amount">
+                    Selected: <span id="selectedAmount">$0.00</span>
+                </div>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="resetBtn" onclick="resetSelection()">Reset</button>
+                    <button class="btn btn-primary" id="confirmChangeBtn" onclick="confirmChange()">Confirm</button>
+                </div>
+            </div>
         </div>
 
-        <!-- 提交找零按钮 -->
-        <button class="btn btn-primary hidden" id="submitBtn" onclick="checkAnswer()">
-            ✓ 确认找零
-        </button>
-
-        <!-- 反馈区域 -->
-        <div class="feedback" id="feedback">
-            <div class="feedback-emoji" id="feedbackEmoji"></div>
-            <div id="feedbackText"></div>
+        <!-- ==================== 反馈覆盖层 ==================== -->
+        <div class="feedback-overlay" id="feedbackOverlay">
+            <div class="feedback-box">
+                <div class="feedback-emoji" id="feedbackEmoji">😊</div>
+                <div class="feedback-text" id="feedbackText">Result text</div>
+                <button class="btn btn-success" onclick="nextCustomer()">Next Customer</button>
+            </div>
         </div>
-
-        <!-- 下一单按钮 -->
-        <button class="btn btn-secondary hidden" id="nextBtn" onclick="nextRound()">
-            🎯 再来一单
-        </button>
     </div>
 
     <script>
         /**
-         * ==================== 游戏数据 ====================
+         * ==================== 游戏数据配置 ====================
          */
 
         /**
-         * 商品库
-         * @type {Array<{id: string, name: string, emoji: string, price: number}>}
+         * 商品库（对象形式，便于查询）
          */
-        const products = [
-            { id: 'apple', name: "苹果", emoji: "🍎", price: 1 },
-            { id: 'donut_a', name: "甜甜圈A", emoji: "🍩", price: 2 },
-            { id: 'donut_b', name: "甜甜圈B", emoji: "🍩", price: 2.5 },
-            { id: 'donut_c', name: "甜甜圈C", emoji: "🍩", price: 2.7 },
-            { id: 'meat', name: "肉", emoji: "🥩", price: 56.3 },
-            { id: 'fish', name: "鱼", emoji: "🐟", price: 56.3 },
-            { id: 'drumstick', name: "鸡腿", emoji: "🍗", price: 56.3 },
-            { id: 'milk', name: "Milk", emoji: "🥛", price: 5 },
-            { id: 'chips', name: "薯片", emoji: "🍟", price: 1.2 },
-            { id: 'eraser', name: "橡皮", emoji: "🧽", price: 3 },
-            { id: 'lollipop', name: "棒棒糖", emoji: "🍭", price: 0.5 }
-        ];
-
-        /**
-         * 游戏状态
-         */
-        let gameState = {
-            phase: 'selecting', // selecting, checkout, result
-            cart: [],
-            total: 0,
-            customerPaid: 0,
-            correctChange: 0
+        const PRODUCTS = {
+            lollipop: { name: "棒棒糖", emoji: "🍭", price: 0.50 },
+            apple: { name: "苹果", emoji: "🍎", price: 1.00 },
+            donut_a: { name: "甜甜圈A", emoji: "🍩", price: 2.00 },
+            donut_b: { name: "甜甜圈B", emoji: "🍩", price: 2.50 },
+            donut_c: { name: "甜甜圈C", emoji: "🍩", price: 3.00 },
+            chips: { name: "薯片", emoji: "🍟", price: 1.20 },
+            orange: { name: "橙子", emoji: "🍊", price: 3.00 },
+            milk: { name: "牛奶", emoji: "🥛", price: 1.50 },
+            meat: { name: "肉", emoji: "🥩", price: 15.00 },
+            fish: { name: "鱼", emoji: "🐟", price: 15.00 },
+            chicken: { name: "鸡腿", emoji: "🍗", price: 15.00 }
         };
 
         /**
-         * ==================== 核心函数 ====================
+         * 货架区域配置（核心配置，易于修改）
+         */
+        const SHELF_CONFIG = [
+            {
+                id: 'donut-tower',
+                name: '甜甜圈塔',
+                type: 'tower',
+                position: { left: '0', top: '8vh' },  // 从顾客区域延伸下来
+                size: { width: '120px', height: '62vh' },
+                layout: 'vertical',
+                products: ['donut_c', 'donut_b', 'donut_a'],
+                style: 'shelf-area-tower'
+            },
+            {
+                id: 'snack-corner',
+                name: '零食角',
+                type: 'grid',
+                position: { left: '0', bottom: '0' },
+                size: { width: '200px', height: '28vh' },
+                layout: 'grid',
+                gridConfig: { rows: 2, cols: 3 },
+                products: ['lollipop', 'lollipop', 'lollipop', 'chips', 'chips', 'chips'],
+                style: 'shelf-area-grid'
+            },
+            {
+                id: 'fruit-stand',
+                name: '水果展示台',
+                type: 'shelves',
+                position: { left: '250px', top: '20vh' },
+                size: { width: '180px', height: '35vh' },
+                layout: 'rows',
+                products: [
+                    { row: 'top', items: ['orange', 'orange'] },
+                    { row: 'middle', items: ['apple', 'apple', 'apple'] },
+                    { row: 'bottom', items: ['milk'] }
+                ],
+                style: 'shelf-area-shelves'
+            },
+            {
+                id: 'seafood-freezer',
+                name: '海鲜冰柜',
+                type: 'freezer',
+                position: { right: '20px', top: '15vh' },
+                size: { width: '220px', height: '22vh' },
+                layout: 'scattered',
+                products: ['fish', 'fish', 'fish'],
+                label: '$50 each',
+                style: 'shelf-area-freezer'
+            },
+            {
+                id: 'meat-freezer',
+                name: '肉类冰柜',
+                type: 'freezer',
+                position: { right: '20px', top: '42vh' },
+                size: { width: '220px', height: '30vh' },
+                layout: 'mixed',
+                products: ['meat', 'chicken', 'chicken', 'chicken', 'chicken'],
+                style: 'shelf-area-freezer'
+            }
+        ];
+
+        /**
+         * 钱币系统（新加坡货币）
+         */
+        let cashRegister = {
+            '0.05': 10,  '0.10': 10,  '0.20': 10,  '0.50': 10,
+            '1': 20,     '2': 10,     '5': 10,     '10': 10,  '50': 5
+        };
+
+        /**
+         * 游戏状态管理
+         */
+        let gameState = {
+            phase: 'order_received',  // order_received, picking_items, making_change, result
+            currentCustomer: {
+                order: [],           // [{ productId, quantity }, ...]
+                bag: [],             // 已给的商品 [itemId, itemId, ...]
+                totalPrice: 0,
+                paid: 0,
+                correctChange: 0
+            },
+            selectedCoins: {},       // 玩家选择的币额 { '0.05': 2, '1': 1, ... }
+            selectedAmount: 0,
+            score: 0,
+            itemIdCounter: 0         // 商品实例ID计数器
+        };
+
+        /**
+         * ==================== 货架渲染系统 ====================
          */
 
         /**
-         * 初始化货架
+         * 初始化所有货架区域
          */
-        function initShelf() {
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '';
+        function initShelfAreas() {
+            const container = document.getElementById('shelfContainer');
+            container.innerHTML = '';
+            gameState.itemIdCounter = 0;  // 重置ID计数器
 
-            products.forEach(product => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                card.onclick = () => addToCart(product);
-                card.innerHTML = `
-                    <div class="product-emoji">${product.emoji}</div>
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-price">$${product.price.toFixed(2)}</div>
-                `;
-                grid.appendChild(card);
+            SHELF_CONFIG.forEach(config => {
+                const areaEl = renderShelfArea(config);
+                container.appendChild(areaEl);
             });
         }
 
         /**
-         * 添加商品到购物车
+         * 根据配置渲染单个货架区域
          */
-        function addToCart(product) {
-            if (gameState.phase !== 'selecting') return;
+        function renderShelfArea(config) {
+            const div = document.createElement('div');
+            div.id = config.id;
+            div.className = `shelf-area ${config.style}`;
 
-            gameState.cart.push({...product});
-            updateCart();
+            // 设置位置和尺寸
+            div.style.cssText = `
+                ${config.position.left !== undefined ? `left: ${config.position.left};` : ''}
+                ${config.position.right !== undefined ? `right: ${config.position.right};` : ''}
+                ${config.position.top !== undefined ? `top: ${config.position.top};` : ''}
+                ${config.position.bottom !== undefined ? `bottom: ${config.position.bottom};` : ''}
+                width: ${config.size.width};
+                height: ${config.size.height};
+            `;
+
+            // 添加标签（如果有）
+            if (config.label) {
+                const label = document.createElement('div');
+                label.className = 'freezer-label';
+                label.textContent = config.label;
+                div.appendChild(label);
+            }
+
+            // 根据布局类型渲染商品
+            renderProducts(div, config.products, config.layout, config.gridConfig);
+
+            return div;
         }
 
         /**
-         * 从购物车移除商品
+         * 根据布局类型渲染商品
          */
-        function removeFromCart(index) {
-            if (gameState.phase !== 'selecting') return;
+        function renderProducts(container, products, layout, gridConfig) {
+            if (layout === 'grid' && gridConfig) {
+                container.style.gridTemplateRows = `repeat(${gridConfig.rows}, 1fr)`;
+                container.style.gridTemplateColumns = `repeat(${gridConfig.cols}, 1fr)`;
+            }
 
-            gameState.cart.splice(index, 1);
-            updateCart();
-        }
-
-        /**
-         * 更新购物车显示
-         */
-        function updateCart() {
-            const cartEmpty = document.getElementById('cartEmpty');
-            const cartItems = document.getElementById('cartItems');
-            const confirmBtn = document.getElementById('confirmOrderBtn');
-
-            if (gameState.cart.length === 0) {
-                cartEmpty.classList.remove('hidden');
-                cartItems.classList.add('hidden');
-                confirmBtn.classList.add('hidden');
+            if (layout === 'rows') {
+                // 分层布局
+                products.forEach(rowData => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'shelf-row';
+                    rowData.items.forEach(productId => {
+                        rowDiv.appendChild(createProductItem(productId));
+                    });
+                    container.appendChild(rowDiv);
+                });
             } else {
-                cartEmpty.classList.add('hidden');
-                cartItems.classList.remove('hidden');
-                confirmBtn.classList.remove('hidden');
-
-                // 渲染购物车商品
-                cartItems.innerHTML = '';
-                gameState.cart.forEach((item, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'cart-item';
-                    li.innerHTML = `
-                        <div class="item-info">
-                            <span class="item-emoji">${item.emoji}</span>
-                            <span>${item.name}</span>
-                            <span class="product-price">$${item.price.toFixed(2)}</span>
-                        </div>
-                        <button class="item-remove" onclick="removeFromCart(${index})">×</button>
-                    `;
-                    cartItems.appendChild(li);
+                // 其他布局（vertical, grid, scattered, mixed）
+                products.forEach(productId => {
+                    container.appendChild(createProductItem(productId));
                 });
             }
         }
 
         /**
-         * 确认订单
+         * 创建商品元素（每个实例有唯一ID）
          */
-        function confirmOrder() {
-            if (gameState.cart.length === 0) {
-                alert('请先选择商品！');
-                return;
-            }
-
-            // 切换到结账阶段
-            gameState.phase = 'checkout';
-
-            // 计算总价
-            gameState.total = gameState.cart.reduce((sum, item) => sum + item.price, 0);
-            gameState.total = parseFloat(gameState.total.toFixed(2));
-
-            // 生成顾客支付金额 (总价 + 随机 1-5 美元)
-            const extraMoney = Math.floor(Math.random() * 5) + 1;
-            gameState.customerPaid = parseFloat((gameState.total + extraMoney).toFixed(2));
-
-            // 计算正确找零
-            gameState.correctChange = parseFloat((gameState.customerPaid - gameState.total).toFixed(2));
-
-            // 更新UI
-            document.getElementById('shelfSection').classList.add('hidden');
-            document.getElementById('confirmOrderBtn').classList.add('hidden');
-            document.getElementById('totalSection').classList.remove('hidden');
-            document.getElementById('changeSection').classList.remove('hidden');
-            document.getElementById('submitBtn').classList.remove('hidden');
-
-            document.getElementById('totalPrice').textContent = `$${gameState.total.toFixed(2)}`;
-            document.getElementById('customerPaid').textContent = `$${gameState.customerPaid.toFixed(2)}`;
-
-            // 聚焦到输入框
-            document.getElementById('changeInput').focus();
+        function createProductItem(productId) {
+            const product = PRODUCTS[productId];
+            const itemId = `item_${gameState.itemIdCounter++}`;
+            const div = document.createElement('div');
+            div.className = 'product-item';
+            div.dataset.productId = productId;
+            div.dataset.itemId = itemId;
+            div.onclick = () => pickItem(itemId, productId);
+            div.innerHTML = `
+                <div class="product-emoji">${product.emoji}</div>
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">$${product.price.toFixed(2)}</div>
+            `;
+            return div;
         }
 
         /**
-         * 检查找零答案
+         * ==================== 游戏流程 ====================
          */
-        function checkAnswer() {
-            const inputElement = document.getElementById('changeInput');
-            const userAnswer = parseFloat(inputElement.value);
 
-            // 验证输入
-            if (isNaN(userAnswer) || userAnswer < 0) {
-                alert('请输入有效的金额！');
+        /**
+         * 生成随机顾客订单
+         */
+        function generateCustomer() {
+            // 统计货架上每种商品的数量
+            const productCounts = {};
+            SHELF_CONFIG.forEach(config => {
+                if (config.layout === 'rows') {
+                    config.products.forEach(rowData => {
+                        rowData.items.forEach(productId => {
+                            productCounts[productId] = (productCounts[productId] || 0) + 1;
+                        });
+                    });
+                } else {
+                    config.products.forEach(productId => {
+                        productCounts[productId] = (productCounts[productId] || 0) + 1;
+                    });
+                }
+            });
+
+            const availableProducts = Object.keys(productCounts);
+            const numItems = 2 + Math.floor(Math.random() * 2); // 2-3种商品
+            const order = [];
+
+            // 随机选择商品
+            const selectedProducts = [];
+            for (let i = 0; i < numItems && i < availableProducts.length; i++) {
+                let productId;
+                do {
+                    productId = availableProducts[Math.floor(Math.random() * availableProducts.length)];
+                } while (selectedProducts.includes(productId));
+                selectedProducts.push(productId);
+
+                // 数量不超过货架上该商品的数量
+                const maxQuantity = Math.min(productCounts[productId], 3);
+                const quantity = 1 + Math.floor(Math.random() * maxQuantity);
+                order.push({ productId, quantity });
+            }
+
+            // 计算总价
+            let totalPrice = 0;
+            order.forEach(item => {
+                totalPrice += PRODUCTS[item.productId].price * item.quantity;
+            });
+            totalPrice = parseFloat(totalPrice.toFixed(2));
+
+            // 生成支付金额（总价 + 随机 2-10 美元，确保需要找零）
+            const extra = 2 + Math.floor(Math.random() * 9);
+            const paid = parseFloat((totalPrice + extra).toFixed(2));
+            const correctChange = parseFloat((paid - totalPrice).toFixed(2));
+
+            return {
+                order,
+                bag: [],
+                totalPrice,
+                paid,
+                correctChange
+            };
+        }
+
+        /**
+         * 开始接单
+         */
+        function startOrder() {
+            gameState.phase = 'order_received';
+            gameState.currentCustomer = generateCustomer();
+            gameState.selectedCoins = {};
+            gameState.selectedAmount = 0;
+
+            // 重新渲染货架（重置所有商品状态）
+            initShelfAreas();
+
+            // 更新顾客区域UI
+            const order = gameState.currentCustomer.order;
+            const orderText = order.map(item =>
+                `${PRODUCTS[item.productId].emoji} x${item.quantity}`
+            ).join('  ');
+
+            document.getElementById('dialogText').textContent = 'I want to buy:';
+            document.getElementById('customerOrder').textContent = orderText;
+            document.getElementById('bagItems').textContent = '-';
+            document.getElementById('paymentInfo').classList.add('hidden');
+            document.getElementById('cashierArea').classList.add('hidden');
+
+            // 进入拿货阶段
+            gameState.phase = 'picking_items';
+        }
+
+        /**
+         * 拿商品给顾客（每个商品实例只能点一次）
+         */
+        function pickItem(itemId, productId) {
+            if (gameState.phase !== 'picking_items') return;
+
+            const order = gameState.currentCustomer.order;
+            const bag = gameState.currentCustomer.bag;
+
+            // 获取该商品元素
+            const itemEl = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (!itemEl || itemEl.classList.contains('picked')) {
+                return; // 已经被选过了
+            }
+
+            // 检查是否在订单中
+            const orderItem = order.find(item => item.productId === productId);
+            if (!orderItem) {
+                // 不在订单中
+                showTempMessage('Customer didn\'t order this!');
                 return;
             }
+
+            // 检查是否已经拿够了
+            const bagCount = bag.filter(id => id === productId).length;
+            if (bagCount >= orderItem.quantity) {
+                showTempMessage('Already enough of this item!');
+                return;
+            }
+
+            // 标记为已选
+            itemEl.classList.add('picked');
+
+            // 添加到购物袋
+            bag.push(productId);
+            updateCustomerBag();
+
+            // 检查是否完成订单
+            checkOrderComplete();
+        }
+
+        /**
+         * 更新顾客购物袋显示
+         */
+        function updateCustomerBag() {
+            const bag = gameState.currentCustomer.bag;
+            const bagEl = document.getElementById('bagItems');
+
+            if (bag.length === 0) {
+                bagEl.textContent = '-';
+            } else {
+                bagEl.textContent = bag.map(id => PRODUCTS[id].emoji).join(' ');
+            }
+        }
+
+        /**
+         * 检查是否凑齐订单
+         */
+        function checkOrderComplete() {
+            const order = gameState.currentCustomer.order;
+            const bag = gameState.currentCustomer.bag;
+
+            // 检查每个商品数量是否匹配
+            const isComplete = order.every(item => {
+                const bagCount = bag.filter(id => id === item.productId).length;
+                return bagCount === item.quantity;
+            });
+
+            if (isComplete) {
+                setTimeout(() => startMakingChange(), 500);
+            }
+        }
+
+        /**
+         * 进入找零阶段
+         */
+        function startMakingChange() {
+            gameState.phase = 'making_change';
+
+            // 显示支付信息
+            const customer = gameState.currentCustomer;
+            document.getElementById('dialogText').textContent = 'Great! Here\'s the money:';
+            document.getElementById('customerOrder').textContent = '';
+            document.getElementById('paymentInfo').classList.remove('hidden');
+            document.getElementById('paymentAmount').textContent = `Customer gave $${customer.paid.toFixed(2)}`;
+
+            // 显示收银台
+            document.getElementById('cashierArea').classList.remove('hidden');
+
+            // 更新订单信息
+            const orderSummary = customer.order.map(item =>
+                `${PRODUCTS[item.productId].emoji}×${item.quantity}`
+            ).join(' ');
+            document.getElementById('orderSummary').textContent = orderSummary;
+            document.getElementById('totalPrice').textContent = `$${customer.totalPrice.toFixed(2)}`;
+            document.getElementById('customerPaid').textContent = `$${customer.paid.toFixed(2)}`;
+            document.getElementById('correctChange').textContent = `$${customer.correctChange.toFixed(2)}`;
+
+            // 初始化钱箱
+            renderCashRegister();
+            updateSelectedAmount();
+            updateCoinButtons();
+        }
+
+        /**
+         * 渲染钱箱
+         */
+        function renderCashRegister() {
+            const grid = document.getElementById('cashGrid');
+            grid.innerHTML = '';
+
+            const denominations = ['0.05', '0.10', '0.20', '0.50', '1', '2', '5', '10', '50'];
+            denominations.forEach(denom => {
+                const btn = document.createElement('button');
+                btn.className = 'coin-btn';
+                btn.id = `coin-${denom}`;
+                btn.dataset.denomination = denom;
+                btn.onclick = () => toggleCoin(denom);
+                btn.disabled = cashRegister[denom] === 0;
+                btn.innerHTML = `
+                    <div class="coin-value">$${parseFloat(denom).toFixed(2)}</div>
+                    <div class="coin-stock">×${cashRegister[denom]}</div>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        /**
+         * 切换币额选择（点击选中，再点取消）
+         */
+        function toggleCoin(denomination) {
+            if (gameState.phase !== 'making_change') return;
+
+            const btn = document.getElementById(`coin-${denomination}`);
+            const stock = cashRegister[denomination];
+            const selectedCount = gameState.selectedCoins[denomination] || 0;
+
+            if (btn.classList.contains('selected')) {
+                // 取消选择
+                if (selectedCount > 0) {
+                    gameState.selectedCoins[denomination] = selectedCount - 1;
+                    gameState.selectedAmount -= parseFloat(denomination);
+                    gameState.selectedAmount = parseFloat(gameState.selectedAmount.toFixed(2));
+
+                    if (gameState.selectedCoins[denomination] === 0) {
+                        delete gameState.selectedCoins[denomination];
+                        btn.classList.remove('selected');
+                    }
+                }
+            } else {
+                // 添加选择
+                if (selectedCount >= stock) {
+                    showTempMessage('No more of this denomination!');
+                    return;
+                }
+
+                gameState.selectedCoins[denomination] = selectedCount + 1;
+                gameState.selectedAmount += parseFloat(denomination);
+                gameState.selectedAmount = parseFloat(gameState.selectedAmount.toFixed(2));
+                btn.classList.add('selected');
+            }
+
+            updateSelectedAmount();
+            updateCoinButtons();
+        }
+
+        /**
+         * 重选
+         */
+        function resetSelection() {
+            gameState.selectedCoins = {};
+            gameState.selectedAmount = 0;
+
+            // 移除所有高亮
+            document.querySelectorAll('.coin-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+
+            updateSelectedAmount();
+            updateCoinButtons();
+        }
+
+        /**
+         * 更新币额按钮显示
+         */
+        function updateCoinButtons() {
+            const denominations = ['0.05', '0.10', '0.20', '0.50', '1', '2', '5', '10', '50'];
+            denominations.forEach(denom => {
+                const btn = document.getElementById(`coin-${denom}`);
+                if (btn) {
+                    const selectedCount = gameState.selectedCoins[denom] || 0;
+                    const stock = cashRegister[denom];
+
+                    // 更新库存显示（显示剩余可选数量）
+                    const stockEl = btn.querySelector('.coin-stock');
+                    if (selectedCount > 0) {
+                        stockEl.textContent = `Selected ×${selectedCount} (${stock - selectedCount} left)`;
+                    } else {
+                        stockEl.textContent = `×${stock}`;
+                    }
+                }
+            });
+        }
+
+        /**
+         * 更新已选金额显示
+         */
+        function updateSelectedAmount() {
+            document.getElementById('selectedAmount').textContent = `$${gameState.selectedAmount.toFixed(2)}`;
+        }
+
+        /**
+         * 确认找零
+         */
+        function confirmChange() {
+            if (gameState.phase !== 'making_change') return;
+
+            if (Object.keys(gameState.selectedCoins).length === 0) {
+                showTempMessage('Please select coins first!');
+                return;
+            }
+
+            const selectedAmount = gameState.selectedAmount;
+            const correctChange = gameState.currentCustomer.correctChange;
 
             gameState.phase = 'result';
 
-            // 获取反馈元素
-            const feedback = document.getElementById('feedback');
-            const feedbackEmoji = document.getElementById('feedbackEmoji');
-            const feedbackText = document.getElementById('feedbackText');
-
             // 判断是否正确
-            if (userAnswer.toFixed(2) === gameState.correctChange.toFixed(2)) {
-                feedback.className = 'feedback feedback-correct show';
-                feedbackEmoji.textContent = '😊';
-                feedbackText.textContent = '太棒了！顾客很满意！';
+            const isCorrect = Math.abs(selectedAmount - correctChange) < 0.01;
+
+            // 显示反馈
+            const overlay = document.getElementById('feedbackOverlay');
+            const emoji = document.getElementById('feedbackEmoji');
+            const text = document.getElementById('feedbackText');
+
+            if (isCorrect) {
+                emoji.textContent = '😊';
+                text.textContent = 'Perfect! Customer is happy!\nCorrect change!';
+                gameState.score++;
             } else {
-                feedback.className = 'feedback feedback-wrong show';
-                feedbackEmoji.textContent = '😡';
-                feedbackText.textContent = `顾客生气了！正确答案是 $${gameState.correctChange.toFixed(2)}`;
+                emoji.textContent = '😡';
+                text.textContent = `Customer is angry!\nYou gave $${selectedAmount.toFixed(2)}\nShould be $${correctChange.toFixed(2)}`;
+                gameState.score = 0;
             }
 
-            // 禁用输入和按钮
-            inputElement.disabled = true;
-            document.getElementById('submitBtn').disabled = true;
-
-            // 显示下一单按钮
-            document.getElementById('nextBtn').classList.remove('hidden');
+            overlay.classList.add('show');
         }
 
         /**
-         * 开始下一轮
+         * 服务下一位顾客
          */
-        function nextRound() {
-            // 重置游戏状态
-            gameState = {
-                phase: 'selecting',
-                cart: [],
-                total: 0,
-                customerPaid: 0,
-                correctChange: 0
-            };
+        function nextCustomer() {
+            document.getElementById('feedbackOverlay').classList.remove('show');
+            startOrder();
+        }
 
-            // 重置UI
-            document.getElementById('shelfSection').classList.remove('hidden');
-            document.getElementById('totalSection').classList.add('hidden');
-            document.getElementById('changeSection').classList.add('hidden');
-            document.getElementById('submitBtn').classList.add('hidden');
-            document.getElementById('feedback').classList.remove('show');
-            document.getElementById('nextBtn').classList.add('hidden');
+        /**
+         * ==================== 辅助函数 ====================
+         */
 
-            document.getElementById('changeInput').value = '';
-            document.getElementById('changeInput').disabled = false;
-            document.getElementById('submitBtn').disabled = false;
+        /**
+         * 显示临时提示消息
+         */
+        function showTempMessage(message) {
+            const dialogText = document.getElementById('dialogText');
+            const originalText = dialogText.textContent;
+            dialogText.textContent = message;
+            dialogText.style.color = '#d32f2f';
 
-            updateCart();
+            setTimeout(() => {
+                dialogText.textContent = originalText;
+                dialogText.style.color = '#333';
+            }, 1500);
         }
 
         /**
          * ==================== 游戏初始化 ====================
          */
         window.addEventListener('DOMContentLoaded', function() {
-            initShelf();
-            updateCart();
+            // 初始化货架
+            initShelfAreas();
 
-            // 支持回车键提交
-            document.getElementById('changeInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !this.disabled) {
-                    checkAnswer();
-                }
-            });
+            // 开始第一轮
+            startOrder();
         });
     </script>
 </body>

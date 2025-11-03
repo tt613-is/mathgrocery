@@ -1,13 +1,88 @@
 # Changelog
 
-所有值得注意的项目更改都将记录在此文件中。
+All notable changes to this project will be documented in this file.
 
-格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2025-01-03
+
+### 🎮 Complete Cashier Simulation Redesign
+
+**Major Changes: From Shopping Cart to Real Cashier Experience**
+- Complete game flow redesign based on hand-drawn sketches
+- Removed shopping cart concept → Implemented "Customer orders → Shopkeeper picks items" flow
+- Changed from "input numbers" to "select physical denominations" for change-making
+- Introduced Singapore Dollar currency system
+- Full English UI localization
+
+### Added - Game Mechanics
+- ✨ **Item Instance System**
+  - Each item icon has a unique ID (item_0, item_1...)
+  - Customer wants 2 milk → Must click 2 different milk icons
+  - Clicked items turn gray (opacity: 0.3) and become non-clickable
+  - Shelf resets at the start of each round
+- 🎯 **Smart Order Generation**
+  - Counts actual quantity of each product on shelves
+  - Customer demands never exceed shelf inventory
+  - Generates 2-3 product types per order
+- 💰 **Singapore Dollar System**
+  - Coins: $0.05, $0.10, $0.20, $0.50, $1
+  - Notes: $2, $5, $10, $50
+  - Cash register with limited stock per denomination
+- 🔄 **Toggle Coin Selection**
+  - Click coin button → Yellow highlight (#ffc107)
+  - Click again → Deselect (toggle)
+  - Real-time display: "Selected ×2 (8 left)"
+  - "Reset" button to clear all selections
+
+### Added - UI/UX
+- 🏪 **3-Area Layout (25vh + 75vh)**
+  - Top: Customer area (avatar + dialog + bag)
+  - Bottom: Shelves (left) + Cash register (center)
+- 👤 **Customer Area Redesign**
+  - Avatar moved to bottom edge (80px, centered)
+  - Dialog bubble positioned at top-right of avatar
+  - Customer bag fixed at top-right corner
+- 🛒 **5 Configurable Shelf Areas**
+  - Donut Tower (left, 3 vertical layers)
+  - Snack Corner (left-bottom, 2x3 grid)
+  - Fruit Stand (center, 3-row shelves)
+  - Seafood Freezer (right-top)
+  - Meat Freezer (right-bottom)
+- 💵 **Cash Register Panel**
+  - 9 denomination buttons with stock display
+  - Order summary and payment info
+  - Selected amount counter
+  - Confirm/Reset buttons
+
+### Changed
+- 🎨 Complete UI overhaul with new layout
+- 🔄 4-stage game flow: Order → Pick Items → Make Change → Feedback
+- 💵 Product pricing adjusted for SGD (precision to $0.05)
+- 🌐 All UI text converted to English
+- 📦 Product prices: Lollipop $0.50, Apple $1.00, Donuts $2/$2.50/$3, Meat $15
+
+### Technical - Architecture
+- **Configuration-Driven Shelf System (Approach C)**
+  - `SHELF_CONFIG`: Define all shelf areas (position, size, layout, products)
+  - `initShelfAreas()`: Render shelves from config
+  - `createProductItem()`: Generate unique ID for each item instance
+- **Game State Management**
+  - 4 phases: order_received → picking_items → making_change → result
+  - `itemIdCounter`: Auto-increment for unique item IDs
+  - `selectedCoins`: Object tracking selected denominations
+- **CSS State Classes**
+  - `.picked`: Grayed-out selected items
+  - `.selected`: Yellow-highlighted coin buttons
+- **Smart Order Validation**
+  - Checks if item is in order
+  - Prevents over-picking same item
+  - Auto-advances when order complete
+
 ### Fixed
-- 🍎 修正苹果价格：从 $3 改回 $1
+- 🍎 Apple price correction: $3 → $1
 
 ## [0.2.0] - 2025-01-02
 

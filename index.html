@@ -45,6 +45,18 @@
             font-size: 80px;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.2));
             margin-bottom: 0;
+            animation: customerEnter 0.5s ease-out;
+        }
+
+        @keyframes customerEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .customer-dialog {
@@ -57,6 +69,21 @@
             padding: 12px 18px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             text-align: center;
+            animation: dialogBounce 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes dialogBounce {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(-10px);
+            }
+            60% {
+                transform: scale(1.05) translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .customer-dialog::before {
@@ -93,6 +120,17 @@
             border-radius: 10px;
             padding: 10px;
             border: 2px dashed #ffa726;
+            transition: all 0.3s ease;
+        }
+
+        .customer-bag.shake {
+            animation: bagShake 0.5s ease;
+        }
+
+        @keyframes bagShake {
+            0%, 100% { transform: translateY(-50%) rotate(0deg); }
+            25% { transform: translateY(-50%) rotate(-5deg) scale(1.05); }
+            75% { transform: translateY(-50%) rotate(5deg) scale(1.05); }
         }
 
         .bag-title {
@@ -140,6 +178,18 @@
             padding: 10px;
             background: rgba(255, 255, 255, 0.9);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: shelfFadeIn 0.5s ease-out both;
+        }
+
+        @keyframes shelfFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* 货架类型：垂直塔式 */
@@ -226,6 +276,22 @@
             opacity: 0.3;
             cursor: not-allowed;
             border-color: #ccc;
+            animation: pickAnimation 0.4s ease;
+        }
+
+        @keyframes pickAnimation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
         }
 
         .product-emoji {
@@ -258,6 +324,18 @@
             padding: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.2);
             z-index: 10;
+            animation: slideInFromTop 0.5s ease-out;
+        }
+
+        @keyframes slideInFromTop {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
 
         .cashier-title {
@@ -314,6 +392,17 @@
             background: #fff9c4;
             border: 3px solid #ffc107;
             box-shadow: 0 0 10px rgba(255, 193, 7, 0.5);
+            animation: coinPulse 0.3s ease;
+        }
+
+        @keyframes coinPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(255, 193, 7, 0.8);
+            }
         }
 
         .coin-value {
@@ -402,6 +491,26 @@
         .btn-primary {
             background: #667eea;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover:not(:disabled)::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary:hover:not(:disabled) {
@@ -420,6 +529,26 @@
         .btn-success {
             background: #00b894;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-success::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-success:hover:not(:disabled)::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-success:hover:not(:disabled) {
@@ -438,6 +567,16 @@
             align-items: center;
             justify-content: center;
             z-index: 100;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         .feedback-overlay.show {
@@ -450,11 +589,41 @@
             padding: 40px;
             text-align: center;
             max-width: 400px;
+            animation: feedbackBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes feedbackBounce {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.05) rotate(2deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
 
         .feedback-emoji {
             font-size: 80px;
             margin-bottom: 20px;
+            animation: emojiPop 0.6s ease 0.3s both;
+        }
+
+        @keyframes emojiPop {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.3) rotate(10deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
         }
 
         .feedback-text {
@@ -938,11 +1107,25 @@
         function updateCustomerBag() {
             const bag = gameState.currentCustomer.bag;
             const bagEl = document.getElementById('bagItems');
+            const bagContainer = document.querySelector('.customer-bag');
 
             if (bag.length === 0) {
                 bagEl.textContent = '-';
             } else {
                 bagEl.textContent = bag.map(id => PRODUCTS[id].emoji).join(' ');
+
+                // Trigger shake animation
+                if (bagContainer) {
+                    bagContainer.classList.remove('shake');
+                    // Force reflow to restart animation
+                    void bagContainer.offsetWidth;
+                    bagContainer.classList.add('shake');
+
+                    // Remove shake class after animation completes
+                    setTimeout(() => {
+                        bagContainer.classList.remove('shake');
+                    }, 500);
+                }
             }
         }
 

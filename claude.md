@@ -144,6 +144,45 @@
    - 实时显示："Selected ×2 (8 left)"
    - "Reset"按钮一键清空所有选择
 
+### 2025-01-03 - 动画与视觉优化 (v0.3.0+)
+
+**为什么添加动画？**
+- 提升用户体验，让游戏更有趣、更有沉浸感
+- 通过视觉反馈帮助玩家理解游戏状态变化
+- 让操作更流畅，减少生硬感
+
+**动画效果列表：**
+1. **顾客入场动画** (`customerEnter`): 顾客头像从上方滑入并淡入 (0.5s ease-out)
+2. **对话框弹出** (`dialogBounce`): 对话框缩放弹跳出现 (0.5s cubic-bezier)
+3. **购物袋摇晃** (`bagShake`): 添加商品时袋子左右摇晃+放大 (0.5s ease)
+4. **商品拾取动画** (`pickAnimation`): 商品被点击时旋转+缩放+渐变灰色 (0.4s ease)
+5. **币额选择脉冲** (`coinPulse`): 选中币额时短暂放大+光晕增强 (0.3s ease)
+6. **货架淡入** (`shelfFadeIn`): 货架区域从下方滑入并淡入 (0.5s ease-out)
+7. **收银台滑入** (`slideInFromTop`): 钱箱面板从上方滑入 (0.5s ease-out)
+8. **反馈覆盖层淡入** (`fadeIn`): 结果屏幕背景渐变出现 (0.3s ease)
+9. **反馈框弹跳** (`feedbackBounce`): 结果框旋转缩放弹入 (0.5s cubic-bezier)
+10. **表情弹出** (`emojiPop`): 😊/😡表情旋转弹出 (0.6s ease, 延迟0.3s)
+11. **按钮涟漪效果**: 鼠标悬停时从中心扩散的圆形涟漪 (::before伪元素)
+
+**技术实现：**
+- **CSS Keyframes**: 定义10+个关键帧动画
+- **Transform动画**: 使用translate/scale/rotate实现流畅效果
+- **Timing Functions**:
+  - `ease-out`: 入场动画（快速开始，缓慢结束）
+  - `cubic-bezier(0.68, -0.55, 0.265, 1.55)`: 弹跳效果（超出后回弹）
+  - `ease`: 平滑过渡
+- **Animation Delay**: 错开动画时间（如对话框延迟0.2s，表情延迟0.3s）
+- **Animation Fill Mode**: `both` 保持动画结束状态
+- **JavaScript触发**:
+  - `updateCustomerBag()` 触发袋子shake动画
+  - 使用 `classList.add/remove` + `offsetWidth` 强制重新触发动画
+
+**性能优化：**
+- 优先使用transform/opacity（GPU加速）
+- 避免触发layout的属性（width/height/top/left）
+- 动画时长控制在0.3s-0.6s，保持流畅不拖沓
+- 使用will-change暗示浏览器优化（未来可添加）
+
 **新加坡货币系统：**
 - 硬币：$0.05、$0.10、$0.20、$0.50、$1
 - 纸币：$2、$5、$10、$50

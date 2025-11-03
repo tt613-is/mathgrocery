@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### ✨ Animation & Polish Enhancements
+
+**Visual Improvements:**
+- 🎬 **Customer Entrance**: Smooth fade-in and slide animation
+- 💬 **Dialog Bounce**: Playful bounce effect when customer speaks
+- 🛍️ **Bag Shake**: Shopping bag shakes when items are added
+- 📦 **Item Pick Animation**: Items pulse and rotate when picked
+- 💰 **Coin Selection Pulse**: Coins glow and scale when selected/deselected
+- 🏪 **Shelf Fade-In**: Shelves smoothly appear on load
+- 🎯 **Cashier Slide-In**: Cash register slides in from top
+- 🎊 **Feedback Bounce**: Result screen bounces in dramatically
+- 😊 **Emoji Pop**: Feedback emoji pops with rotation effect
+- 🔘 **Button Ripple**: Ripple effect on button hover
+- ⚡ **Smooth Transitions**: All interactions feel fluid and responsive
+
+**Technical:**
+- Added 10+ CSS keyframe animations
+- Enhanced hover states with transform effects
+- Implemented ripple effect using ::before pseudo-elements
+- Optimized animation timing for natural feel
+- Used cubic-bezier easing for bounce effects
+
 ## [0.3.0] - 2025-01-03
 
 ### 🎮 Complete Cashier Simulation Redesign

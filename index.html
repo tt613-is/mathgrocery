@@ -355,6 +355,32 @@
             margin-bottom: 4px;
         }
 
+        /* Emoji 尺寸变体 */
+        .product-emoji.emoji-small {
+            font-size: 24px;
+        }
+
+        .product-emoji.emoji-medium {
+            font-size: 32px;
+        }
+
+        .product-emoji.emoji-large {
+            font-size: 40px;
+        }
+
+        /* 用于订单和购物袋中的 emoji 尺寸 */
+        .emoji-small {
+            font-size: 24px;
+        }
+
+        .emoji-medium {
+            font-size: 32px;
+        }
+
+        .emoji-large {
+            font-size: 40px;
+        }
+
         .product-name {
             font-size: 12px;
             color: #666;
@@ -1040,9 +1066,9 @@
             PRODUCTS = {
                 lollipop: { name: "Lollipop", emoji: "🍭", price: 0.50 },
                 apple: { name: "Apple", emoji: "🍎", price: 1.00 },
-                donut_a: { name: "Donut A", emoji: "🍩", price: 2.50 },
-                donut_b: { name: "Donut B", emoji: "🍩", price: 2.55 },
-                donut_c: { name: "Donut C", emoji: "🍩", price: 2.75 },
+                donut_a: { name: "Donut A", emoji: "🍩", price: 2.50, emojiSize: "small" },
+                donut_b: { name: "Donut B", emoji: "🍩", price: 2.55, emojiSize: "medium" },
+                donut_c: { name: "Donut C", emoji: "🍩", price: 2.75, emojiSize: "large" },
                 chips: { name: "Chips", emoji: "🍟", price: 1.20 },
                 orange: { name: "Orange", emoji: "🍊", price: 3.00 },
                 milk: { name: "Milk", emoji: "🥛", price: 1.50 },
@@ -1469,15 +1495,18 @@
             div.dataset.itemId = itemId;
             div.onclick = () => pickItem(itemId, productId);
 
+            // 获取 emoji 尺寸类
+            const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
+
             // 根据 showProductName 配置决定是否显示商品名称
             if (showProductName) {
                 div.innerHTML = `
-                    <div class="product-emoji">${product.emoji}</div>
+                    <div class="product-emoji ${sizeClass}">${product.emoji}</div>
                     <div class="product-name">${product.name}</div>
                 `;
             } else {
                 div.innerHTML = `
-                    <div class="product-emoji">${product.emoji}</div>
+                    <div class="product-emoji ${sizeClass}">${product.emoji}</div>
                 `;
             }
 
@@ -1600,19 +1629,21 @@
 
             // 更新顾客区域UI
             const order = gameState.currentCustomer.order;
-            const orderText = order.map(item => {
+            const orderHTML = order.map(item => {
                 const product = PRODUCTS[item.productId];
+                const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
+
                 // 对于甜甜圈，在表情符号后添加类型字母（A/B/C）
                 if (item.productId.startsWith('donut_')) {
-                    const donutType = item.productId.split('_')[1].toUpperCase(); // 提取 a/b/c 并转为大写
-                    return `${product.emoji}${donutType} x${item.quantity}`;
+                    const donutType = item.productId.split('_')[1].toUpperCase();
+                    return `<span class="${sizeClass}">${product.emoji}</span>${donutType} x${item.quantity}`;
                 } else {
-                    return `${product.emoji} x${item.quantity}`;
+                    return `<span class="${sizeClass}">${product.emoji}</span> x${item.quantity}`;
                 }
             }).join('  ');
 
             document.getElementById('dialogText').textContent = 'I want to buy:';
-            document.getElementById('customerOrder').textContent = orderText;
+            document.getElementById('customerOrder').innerHTML = orderHTML;
             document.getElementById('bagItems').textContent = '-';
             document.getElementById('paymentInfo').classList.add('hidden');
             document.getElementById('cashierArea').classList.add('hidden');
@@ -1673,7 +1704,13 @@
             if (bag.length === 0) {
                 bagEl.textContent = '-';
             } else {
-                bagEl.textContent = bag.map(id => PRODUCTS[id].emoji).join(' ');
+                // 使用 HTML 来显示不同尺寸的 emoji
+                const bagHTML = bag.map(id => {
+                    const product = PRODUCTS[id];
+                    const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
+                    return `<span class="${sizeClass}">${product.emoji}</span>`;
+                }).join(' ');
+                bagEl.innerHTML = bagHTML;
 
                 // Trigger shake animation
                 if (bagContainer) {

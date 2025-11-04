@@ -62,9 +62,9 @@
   "products": {
     "lollipop": { "name": "Lollipop", "emoji": "🍭", "price": 0.50 },
     "apple": { "name": "Apple", "emoji": "🍎", "price": 1.00 },
-    "donut_a": { "name": "Donut A", "emoji": "🍩", "price": 2.50 },
-    "donut_b": { "name": "Donut B", "emoji": "🍩", "price": 2.55 },
-    "donut_c": { "name": "Donut C", "emoji": "🍩", "price": 2.75 },
+    "donut_a": { "name": "Donut A", "emoji": "🍩", "price": 2.50, "emojiSize": "small" },
+    "donut_b": { "name": "Donut B", "emoji": "🍩", "price": 2.55, "emojiSize": "medium" },
+    "donut_c": { "name": "Donut C", "emoji": "🍩", "price": 2.75, "emojiSize": "large" },
     "chips": { "name": "Chips", "emoji": "🍟", "price": 1.20 },
     "orange": { "name": "Orange", "emoji": "🍊", "price": 3.00 },
     "milk": { "name": "Milk", "emoji": "🥛", "price": 1.50 },

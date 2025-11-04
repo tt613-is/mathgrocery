@@ -87,14 +87,14 @@
         "donut_a", "donut_a", "donut_a"
       ],
       "style": "shelf-area-grid",
-      "showProductName": true,
+      "showProductName": false,
       "priceLabel": {
         "show": true,
         "productName": "Donuts",
         "items": [
-          { "name": "Donut C", "price": "$2.75" },
-          { "name": "Donut B", "price": "$2.55" },
-          { "name": "Donut A", "price": "$2.50" }
+          { "name": "大 (Large)", "price": "$2.75" },
+          { "name": "中 (Medium)", "price": "$2.55" },
+          { "name": "小 (Small)", "price": "$2.50" }
         ],
         "unit": "each",
         "discount": null

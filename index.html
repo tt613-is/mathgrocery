@@ -1093,14 +1093,14 @@
                     'donut_a', 'donut_a', 'donut_a'
                 ],
                 style: 'shelf-area-grid',
-                showProductName: true,
+                showProductName: false,
                 priceLabel: {
                     show: true,
                     productName: 'Donuts',
                     items: [
-                        { name: 'Donut C', price: '$2.75' },
-                        { name: 'Donut B', price: '$2.55' },
-                        { name: 'Donut A', price: '$2.50' }
+                        { name: '大 (Large)', price: '$2.75' },
+                        { name: '中 (Medium)', price: '$2.55' },
+                        { name: '小 (Small)', price: '$2.50' }
                     ],
                     unit: 'each',
                     discount: null
@@ -1633,13 +1633,8 @@
                 const product = PRODUCTS[item.productId];
                 const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
 
-                // 对于甜甜圈，在表情符号后添加类型字母（A/B/C）
-                if (item.productId.startsWith('donut_')) {
-                    const donutType = item.productId.split('_')[1].toUpperCase();
-                    return `<span class="${sizeClass}">${product.emoji}</span>${donutType} x${item.quantity}`;
-                } else {
-                    return `<span class="${sizeClass}">${product.emoji}</span> x${item.quantity}`;
-                }
+                // 所有商品统一显示：emoji + 数量（不显示ABC字母）
+                return `<span class="${sizeClass}">${product.emoji}</span> x${item.quantity}`;
             }).join('  ');
 
             document.getElementById('dialogText').textContent = 'I want to buy:';

@@ -1519,12 +1519,19 @@
         function renderProductIcon(productId, extraClass = '') {
             const product = PRODUCTS[productId];
 
-            // 如果是苹果或棒棒糖，返回图片（忽略extraClass，使用固定大小）
-            if (productId === 'apple') {
-                return `<img src="assets/apple.png" class="apple-icon" alt="Apple">`;
-            }
-            if (productId === 'lollipop') {
-                return `<img src="assets/lollipop.png" class="apple-icon" alt="Lollipop">`;
+            // 使用自定义图片的商品（忽略extraClass，使用固定大小）
+            const imageMap = {
+                'apple': 'assets/apple.png',
+                'lollipop': 'assets/lollipop.png',
+                'fish': 'assets/fish.png',
+                'chips': 'assets/chips.png',
+                'chicken': 'assets/drumstick.png',
+                'meat': 'assets/ham.png'
+            };
+
+            if (imageMap[productId]) {
+                const altText = product.name;
+                return `<img src="${imageMap[productId]}" class="apple-icon" alt="${altText}">`;
             }
 
             // 其他商品返回emoji
@@ -1543,8 +1550,19 @@
             div.dataset.itemId = itemId;
             div.onclick = () => pickItem(itemId, productId);
 
-            // 如果是苹果或棒棒糖，添加特殊类名（无边框）
-            if (productId === 'apple' || productId === 'lollipop') {
+            // 使用自定义图片的商品列表
+            const imageProducts = ['apple', 'lollipop', 'fish', 'chips', 'chicken', 'meat'];
+            const imageMap = {
+                'apple': 'assets/apple.png',
+                'lollipop': 'assets/lollipop.png',
+                'fish': 'assets/fish.png',
+                'chips': 'assets/chips.png',
+                'chicken': 'assets/drumstick.png',
+                'meat': 'assets/ham.png'
+            };
+
+            // 如果使用自定义图片，添加无边框类
+            if (imageProducts.includes(productId)) {
                 div.classList.add('product-item-no-border');
             }
 
@@ -1553,12 +1571,10 @@
 
             // 根据 showProductName 配置决定是否显示商品名称
             if (showProductName) {
-                // 如果是苹果或棒棒糖，使用图片
-                if (productId === 'apple' || productId === 'lollipop') {
-                    const imgSrc = productId === 'apple' ? 'assets/apple.png' : 'assets/lollipop.png';
-                    const altText = productId === 'apple' ? 'Apple' : 'Lollipop';
+                // 如果使用自定义图片
+                if (imageProducts.includes(productId)) {
                     div.innerHTML = `
-                        <img src="${imgSrc}" class="product-image" alt="${altText}">
+                        <img src="${imageMap[productId]}" class="product-image" alt="${product.name}">
                         <div class="product-name">${product.name}</div>
                     `;
                 } else {
@@ -1568,12 +1584,10 @@
                     `;
                 }
             } else {
-                // 如果是苹果或棒棒糖，使用图片
-                if (productId === 'apple' || productId === 'lollipop') {
-                    const imgSrc = productId === 'apple' ? 'assets/apple.png' : 'assets/lollipop.png';
-                    const altText = productId === 'apple' ? 'Apple' : 'Lollipop';
+                // 如果使用自定义图片
+                if (imageProducts.includes(productId)) {
                     div.innerHTML = `
-                        <img src="${imgSrc}" class="product-image" alt="${altText}">
+                        <img src="${imageMap[productId]}" class="product-image" alt="${product.name}">
                     `;
                 } else {
                     div.innerHTML = `

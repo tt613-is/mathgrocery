@@ -9,7 +9,14 @@
       "Bash(git restore:*)",
       "Bash(python3:*)",
       "Bash(lsof:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "Bash(node test-pricing.js:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(git revert:*)",
+      "Bash(sips:*)"
     ],
     "deny": [],
     "ask": []

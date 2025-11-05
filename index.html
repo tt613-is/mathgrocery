@@ -420,26 +420,20 @@
 
         /* 订单和购物袋中的苹果图片 */
         .apple-icon {
-            width: 32px;
-            height: 32px;
+            width: 1.2em !important;
+            height: 1.2em !important;
             object-fit: contain;
             display: inline-block;
             vertical-align: middle;
+            margin: 0 2px;
         }
 
-        .apple-icon.emoji-small {
-            width: 24px;
-            height: 24px;
-        }
-
-        .apple-icon.emoji-medium {
-            width: 32px;
-            height: 32px;
-        }
-
+        /* 覆盖emoji尺寸类对苹果图片的影响 */
+        .apple-icon.emoji-small,
+        .apple-icon.emoji-medium,
         .apple-icon.emoji-large {
-            width: 40px;
-            height: 40px;
+            width: 1.2em !important;
+            height: 1.2em !important;
         }
 
         /* ==================== 计算器区域 ==================== */
@@ -1429,6 +1423,8 @@
                 ${config.position.bottom !== undefined ? `bottom: ${config.position.bottom};` : ''}
                 width: ${config.size.width};
                 height: ${config.size.height};
+                ${config.spacing && config.spacing.gap ? `gap: ${config.spacing.gap};` : ''}
+                ${config.spacing && config.spacing.padding ? `padding: ${config.spacing.padding};` : ''}
             `;
 
             // 添加价格标签（如果有）
@@ -1504,6 +1500,24 @@
                     container.appendChild(createProductItem(productId, showProductName));
                 });
             }
+        }
+
+        /**
+         * 渲染商品图标（统一处理图片和emoji）
+         * @param {string} productId - 商品ID
+         * @param {string} extraClass - 额外的CSS类（如 emoji-small）
+         * @returns {string} HTML字符串
+         */
+        function renderProductIcon(productId, extraClass = '') {
+            const product = PRODUCTS[productId];
+
+            // 如果是苹果，返回图片（忽略extraClass，使用固定大小）
+            if (productId === 'apple') {
+                return `<img src="assets/apple.png" class="apple-icon" alt="Apple">`;
+            }
+
+            // 其他商品返回emoji
+            return `<span class="${extraClass}">${product.emoji}</span>`;
         }
 
         /**
@@ -1676,12 +1690,8 @@
                 const product = PRODUCTS[item.productId];
                 const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
 
-                // 如果是苹果，显示图片；其他商品显示emoji
-                if (item.productId === 'apple') {
-                    return `<img src="assets/apple.png" class="apple-icon ${sizeClass}" alt="Apple"> x${item.quantity}`;
-                } else {
-                    return `<span class="${sizeClass}">${product.emoji}</span> x${item.quantity}`;
-                }
+                // 使用统一的图标渲染函数
+                return `${renderProductIcon(item.productId, sizeClass)} x${item.quantity}`;
             }).join('  ');
 
             document.getElementById('dialogText').textContent = 'I want to buy:';
@@ -1751,12 +1761,8 @@
                     const product = PRODUCTS[id];
                     const sizeClass = product.emojiSize ? `emoji-${product.emojiSize}` : '';
 
-                    // 如果是苹果，显示图片；其他商品显示emoji
-                    if (id === 'apple') {
-                        return `<img src="assets/apple.png" class="apple-icon ${sizeClass}" alt="Apple">`;
-                    } else {
-                        return `<span class="${sizeClass}">${product.emoji}</span>`;
-                    }
+                    // 使用统一的图标渲染函数
+                    return renderProductIcon(id, sizeClass);
                 }).join(' ');
                 bagEl.innerHTML = bagHTML;
 

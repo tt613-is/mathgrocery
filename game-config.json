@@ -17,46 +17,46 @@
   },
   "calculator": {
     "position": {
-      "left": "50%",
-      "top": "-15%"
+      "left": "60%",
+      "top": "-10%"
     },
     "size": {
-      "width": "600px",
+      "width": "400px",
       "maxWidth": "90%"
     },
-    "padding": "30px",
+    "padding": "16px",
     "display": {
-      "height": "90px",
-      "padding": "25px 20px"
+      "height": "50px",
+      "padding": "15px 12px"
     },
     "submitButton": {
-      "width": "90px",
-      "height": "90px",
-      "fontSize": "48px"
+      "width": "60px",
+      "height": "60px",
+      "fontSize": "32px"
     },
     "numberButtons": {
-      "width": "70px",
-      "height": "70px",
-      "fontSize": "32px",
+      "width": "48px",
+      "height": "48px",
+      "fontSize": "24px",
       "positions": {
-        "1": { "left": "90px", "top": "30px" },
-        "2": { "left": "190px", "top": "30px" },
-        "3": { "left": "290px", "top": "30px" },
-        "4": { "left": "390px", "top": "30px" },
-        "5": { "left": "140px", "top": "130px" },
-        "6": { "left": "240px", "top": "130px" },
-        "7": { "left": "340px", "top": "130px" },
-        "8": { "left": "190px", "top": "230px" },
-        "9": { "left": "290px", "top": "230px" },
-        "0": { "left": "240px", "top": "330px" },
-        "backspace": { "left": "340px", "top": "330px" }
+        "1": { "left": "60px", "top": "20px" },
+        "2": { "left": "128px", "top": "20px" },
+        "3": { "left": "196px", "top": "20px" },
+        "4": { "left": "264px", "top": "20px" },
+        "5": { "left": "94px", "top": "88px" },
+        "6": { "left": "162px", "top": "88px" },
+        "7": { "left": "230px", "top": "88px" },
+        "8": { "left": "128px", "top": "156px" },
+        "9": { "left": "196px", "top": "156px" },
+        "0": { "left": "162px", "top": "224px" },
+        "backspace": { "left": "230px", "top": "224px" }
       }
     },
     "operatorButtons": {
-      "width": "80px",
-      "height": "60px",
-      "fontSize": "28px",
-      "gap": "15px"
+      "width": "52px",
+      "height": "38px",
+      "fontSize": "20px",
+      "gap": "8px"
     }
   },
   "products": {
@@ -93,9 +93,9 @@
         "show": true,
         "productName": "Donuts",
         "items": [
-          { "name": "大 (Large)", "price": "$2.75" },
-          { "name": "中 (Medium)", "price": "$2.55" },
-          { "name": "小 (Small)", "price": "$2.50" }
+          { "name": "Large", "price": "$2.75" },
+          { "name": "Medium", "price": "$2.55" },
+          { "name": "Small", "price": "$2.50" }
         ],
         "unit": "each",
         "discount": null
@@ -110,7 +110,7 @@
       "layout": "grid",
       "gridConfig": { "rows": 2, "cols": 3 },
       "spacing": { "gap": "8px" },
-      "products": ["lollipop", "lollipop", "lollipop", "chips", "chips", "chips"],
+      "products": ["lollipop", "lollipop", "lollipop", "lollipop", "lollipop", "lollipop", "chips", "chips", "chips"],
       "style": "shelf-area-grid",
       "showProductName": false,
       "discountRules": [

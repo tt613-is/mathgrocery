@@ -281,7 +281,7 @@
         /* 价格标签 */
         .price-label {
             position: absolute;
-            top: -10px;
+            top: -20px;
             left: 10px;
             background: white;
             border: 2px solid #000;
@@ -455,9 +455,9 @@
         .calculator-hint {
             text-align: center;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             opacity: 0.9;
             letter-spacing: 1px;
         }
@@ -466,8 +466,8 @@
         .display-container {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         /* 计算器显示屏（缩短） */
@@ -514,7 +514,7 @@
 
         .calculator-buttons {
             position: relative;
-            height: 450px;
+            height: 290px;
             width: 100%;
         }
 
@@ -565,8 +565,8 @@
         .calculator-operators {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 12px;
         }
 
         .calc-op-button {
@@ -1432,6 +1432,14 @@
                 const priceLabel = document.createElement('div');
                 priceLabel.className = 'price-label';
 
+                // 应用自定义位置（如果配置了）
+                if (config.priceLabel.position) {
+                    if (config.priceLabel.position.top) priceLabel.style.top = config.priceLabel.position.top;
+                    if (config.priceLabel.position.left) priceLabel.style.left = config.priceLabel.position.left;
+                    if (config.priceLabel.position.right) priceLabel.style.right = config.priceLabel.position.right;
+                    if (config.priceLabel.position.bottom) priceLabel.style.bottom = config.priceLabel.position.bottom;
+                }
+
                 // 简单价格标签（甜甜圈货架用）
                 if (config.priceLabel.price && !config.priceLabel.productName) {
                     priceLabel.innerHTML = config.priceLabel.price;
@@ -1511,9 +1519,12 @@
         function renderProductIcon(productId, extraClass = '') {
             const product = PRODUCTS[productId];
 
-            // 如果是苹果，返回图片（忽略extraClass，使用固定大小）
+            // 如果是苹果或棒棒糖，返回图片（忽略extraClass，使用固定大小）
             if (productId === 'apple') {
                 return `<img src="assets/apple.png" class="apple-icon" alt="Apple">`;
+            }
+            if (productId === 'lollipop') {
+                return `<img src="assets/lollipop.png" class="apple-icon" alt="Lollipop">`;
             }
 
             // 其他商品返回emoji
@@ -1532,8 +1543,8 @@
             div.dataset.itemId = itemId;
             div.onclick = () => pickItem(itemId, productId);
 
-            // 如果是苹果，添加特殊类名（无边框）
-            if (productId === 'apple') {
+            // 如果是苹果或棒棒糖，添加特殊类名（无边框）
+            if (productId === 'apple' || productId === 'lollipop') {
                 div.classList.add('product-item-no-border');
             }
 
@@ -1542,10 +1553,12 @@
 
             // 根据 showProductName 配置决定是否显示商品名称
             if (showProductName) {
-                // 如果是苹果，使用图片
-                if (productId === 'apple') {
+                // 如果是苹果或棒棒糖，使用图片
+                if (productId === 'apple' || productId === 'lollipop') {
+                    const imgSrc = productId === 'apple' ? 'assets/apple.png' : 'assets/lollipop.png';
+                    const altText = productId === 'apple' ? 'Apple' : 'Lollipop';
                     div.innerHTML = `
-                        <img src="assets/apple.png" class="product-image" alt="Apple">
+                        <img src="${imgSrc}" class="product-image" alt="${altText}">
                         <div class="product-name">${product.name}</div>
                     `;
                 } else {
@@ -1555,10 +1568,12 @@
                     `;
                 }
             } else {
-                // 如果是苹果，使用图片
-                if (productId === 'apple') {
+                // 如果是苹果或棒棒糖，使用图片
+                if (productId === 'apple' || productId === 'lollipop') {
+                    const imgSrc = productId === 'apple' ? 'assets/apple.png' : 'assets/lollipop.png';
+                    const altText = productId === 'apple' ? 'Apple' : 'Lollipop';
                     div.innerHTML = `
-                        <img src="assets/apple.png" class="product-image" alt="Apple">
+                        <img src="${imgSrc}" class="product-image" alt="${altText}">
                     `;
                 } else {
                     div.innerHTML = `
